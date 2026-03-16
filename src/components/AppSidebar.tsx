@@ -1,4 +1,6 @@
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useMicrosoftCalendar } from '@/context/MicrosoftCalendarContext';
 import { AREAS } from '@/lib/supabase';
 import { LogOut, ListTodo, Clock, RefreshCw, CheckCircle2, Ban } from 'lucide-react';
 
@@ -8,9 +10,9 @@ type Filter = {
 };
 
 type Props = {
-  filter: Filter;
-  setFilter: (f: Filter) => void;
-  counts: { total: number; pendente: number; emCurso: number; concluido: number; bloqueado: number };
+  filter?: Filter;
+  setFilter?: (f: Filter) => void;
+  counts?: { total: number; pendente: number; emCurso: number; concluido: number; bloqueado: number };
 };
 
 const navItems = [
@@ -21,8 +23,33 @@ const navItems = [
   { label: 'Bloqueadas', status: 'bloqueado', icon: Ban },
 ];
 
-export default function AppSidebar({ filter, setFilter, counts }: Props) {
+const defaultFilter: Filter = { status: null, area: null };
+const defaultCounts = { total: 0, pendente: 0, emCurso: 0, concluido: 0, bloqueado: 0 };
+
+export default function AppSidebar({ filter = defaultFilter, setFilter = () => {}, counts = defaultCounts }: Props) {
   const { user, signOut } = useAuth();
+  const { todayMeetings, isConnected } = useMicrosoftCalendar();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isTasksPage = location.pathname === '/';
+  const isReunioes = location.pathname === '/reunioes';
+
+  const handleNavItemClick = (item: typeof navItems[number]) => {
+    if (isTasksPage) {
+      setFilter({ status: item.status, area: null });
+    } else {
+      navigate('/');
+    }
+  };
+
+  const handleAreaClick = (areaValue: string) => {
+    if (isTasksPage) {
+      setFilter({ status: null, area: filter.area === areaValue ? null : areaValue });
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <aside className="hidden md:flex flex-col w-[220px] min-h-screen bg-[#0d0d0d] border-r border-[#1a1a1a] fixed left-0 top-0 z-30">
@@ -38,11 +65,11 @@ export default function AppSidebar({ filter, setFilter, counts }: Props) {
       <nav className="flex-1 px-3 space-y-0.5">
         <div className="mb-3">
           {navItems.map((item) => {
-            const active = filter.status === item.status && !filter.area;
+            const active = isTasksPage && filter.status === item.status && !filter.area;
             return (
               <button
                 key={item.label}
-                onClick={() => setFilter({ status: item.status, area: null })}
+                onClick={() => handleNavItemClick(item)}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-all ${
                   active
                     ? 'bg-[rgba(255,255,255,0.06)] text-foreground border-l-2 border-foreground font-medium'
@@ -54,6 +81,24 @@ export default function AppSidebar({ filter, setFilter, counts }: Props) {
               </button>
             );
           })}
+
+          {/* Reuniões */}
+          <button
+            onClick={() => navigate('/reunioes')}
+            className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] transition-all ${
+              isReunioes
+                ? 'bg-[rgba(255,255,255,0.06)] text-foreground border-l-2 border-foreground font-medium'
+                : 'text-muted-foreground hover:text-foreground hover:bg-[rgba(255,255,255,0.03)]'
+            }`}
+          >
+            <span className="text-[15px] leading-none">📅</span>
+            <span className="flex-1 text-left">Reuniões</span>
+            {isConnected && todayMeetings.length > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none bg-white text-black min-w-[18px] text-center">
+                {todayMeetings.length}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Area filters */}
@@ -62,9 +107,9 @@ export default function AppSidebar({ filter, setFilter, counts }: Props) {
           {AREAS.map((area) => (
             <button
               key={area.value}
-              onClick={() => setFilter({ status: null, area: filter.area === area.value ? null : area.value })}
+              onClick={() => handleAreaClick(area.value)}
               className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-[12px] transition-all ${
-                filter.area === area.value
+                isTasksPage && filter.area === area.value
                   ? 'bg-[rgba(255,255,255,0.06)] text-foreground font-medium'
                   : 'text-muted-foreground hover:text-foreground hover:bg-[rgba(255,255,255,0.03)]'
               }`}
