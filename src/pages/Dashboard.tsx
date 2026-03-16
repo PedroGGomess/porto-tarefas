@@ -12,6 +12,11 @@ import TaskModal from '@/components/TaskModal';
 import DeleteDialog from '@/components/DeleteDialog';
 import TaskDetailPanel from '@/components/TaskDetailPanel';
 import InviteModal from '@/components/InviteModal';
+import CountdownBanner from '@/components/CountdownBanner';
+import KanbanView from '@/components/KanbanView';
+import GlobalAIAssistant from '@/components/GlobalAIAssistant';
+import { useMicrosoftCalendar } from '@/context/MicrosoftCalendarContext';
+import { parseUTC } from '@/lib/graphApi';
 import { Plus, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -20,9 +25,11 @@ const PRIORITY_ORDER: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
 export default function Dashboard() {
   const { tasks, isLoading, createTask, updateTask, deleteTask } = useTasks();
   const { isConnected, todayMeetings } = useMicrosoftCalendar();
-  const [filter, setFilter] = useState<{ status: string | null; area: string | null }>({ status: null, area: null });
+  const [filter, setFilter] = useState<{ status: string | null; area: string | null; responsavel: string | null }>({ status: null, area: null, responsavel: null });
   const [pillFilter, setPillFilter] = useState('todas');
   const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useState<'lista' | 'kanban'>('lista');
+  const [hideCompleted, setHideCompleted] = useState(() => localStorage.getItem('hideCompleted') === 'true');
   const [modalOpen, setModalOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);
@@ -31,6 +38,11 @@ export default function Dashboard() {
 
   const taskIds = useMemo(() => tasks.map(t => t.id), [tasks]);
   const unreadCounts = useAllUnreadCounts(taskIds);
+
+  const uniqueResponsaveis = useMemo(() => {
+    const set = new Set(tasks.map(t => t.responsavel).filter(Boolean) as string[]);
+    return Array.from(set).sort();
+  }, [tasks]);
 
   const counts = useMemo(() => ({
     total: tasks.length,
@@ -54,6 +66,12 @@ export default function Dashboard() {
       result = result.filter(t => t.area === pillFilter.slice(2));
     }
 
+    // Responsavel filter
+    if (filter.responsavel) result = result.filter(t => t.responsavel === filter.responsavel);
+
+    // Hide completed
+    if (hideCompleted) result = result.filter(t => t.status !== 'concluido');
+
     // Search
     if (search) {
       const q = search.toLowerCase();
@@ -76,7 +94,7 @@ export default function Dashboard() {
     });
 
     return result;
-  }, [tasks, filter, pillFilter, search]);
+  }, [tasks, filter, pillFilter, search, hideCompleted]);
 
   const pageTitle = filter.area
     ? tasks.find(t => t.area === filter.area)
@@ -102,6 +120,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
+      <CountdownBanner />
       <AppSidebar filter={filter} setFilter={setFilter} counts={counts} />
       <MobileNav filter={filter} setFilter={setFilter} />
 
@@ -119,6 +138,34 @@ export default function Dashboard() {
                 className="w-full sm:w-52 pl-8 pr-3 py-2 rounded-lg bg-card border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-border-hover transition-colors"
               />
             </div>
+            {/* View toggle */}
+            <div className="flex rounded-lg border border-border overflow-hidden text-xs font-semibold">
+              <button
+                onClick={() => setViewMode('lista')}
+                className={viewMode === 'lista' ? 'px-3 py-2 bg-primary text-primary-foreground' : 'px-3 py-2 bg-card text-muted-foreground hover:text-foreground'}
+              >
+                ☰ Lista
+              </button>
+              <button
+                onClick={() => setViewMode('kanban')}
+                className={viewMode === 'kanban' ? 'px-3 py-2 bg-primary text-primary-foreground' : 'px-3 py-2 bg-card text-muted-foreground hover:text-foreground'}
+              >
+                ⬜ Kanban
+              </button>
+            </div>
+            {/* Hide completed toggle */}
+            <label className="flex items-center gap-1.5 cursor-pointer text-xs text-muted-foreground whitespace-nowrap">
+              <input
+                type="checkbox"
+                checked={hideCompleted}
+                onChange={() => { const v = !hideCompleted; setHideCompleted(v); localStorage.setItem('hideCompleted', String(v)); }}
+                className="sr-only"
+              />
+              <div className={`w-7 h-4 rounded-full transition-colors ${hideCompleted ? 'bg-primary' : 'bg-surface-raised'}`}>
+                <div className={`w-3 h-3 rounded-full bg-white mt-0.5 transition-transform ${hideCompleted ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+              </div>
+              Esconder concluídas
+            </label>
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -183,11 +230,24 @@ export default function Dashboard() {
         </div>
 
         {/* Filter pills */}
-        <div className="mb-5">
+        <div className="mb-3">
           <FilterPills activeFilter={pillFilter} setActiveFilter={setPillFilter} />
         </div>
 
-        {/* Task list */}
+        {/* Responsável filter */}
+        <div className="mb-5 flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">👤 Responsável:</span>
+          <select
+            value={filter.responsavel ?? ''}
+            onChange={e => setFilter(f => ({ ...f, responsavel: e.target.value || null }))}
+            className="text-xs bg-card border border-border rounded-lg px-2 py-1 text-foreground focus:outline-none"
+          >
+            <option value="">Todos</option>
+            {uniqueResponsaveis.map(r => <option key={r} value={r}>{r}</option>)}
+          </select>
+        </div>
+
+        {/* Task list / kanban */}
         {isLoading ? (
           <div className="text-center py-16 text-muted-foreground text-sm">A carregar...</div>
         ) : filteredTasks.length === 0 ? (
@@ -206,6 +266,16 @@ export default function Dashboard() {
               Nova Tarefa
             </button>
           </motion.div>
+        ) : viewMode === 'kanban' ? (
+          <KanbanView
+            tasks={filteredTasks}
+            onEdit={(t) => { setEditTask(t); setModalOpen(true); }}
+            onDelete={setDeleteTarget}
+            onStatusCycle={handleStatusCycle}
+            onOpenDetail={setDetailTask}
+            onInvite={setInviteTask}
+            unreadCounts={unreadCounts}
+          />
         ) : (
           <div className="space-y-2">
             {filteredTasks.map((task, i) => (
@@ -257,6 +327,8 @@ export default function Dashboard() {
           taskId={inviteTask.id}
         />
       )}
+
+      <GlobalAIAssistant tasks={tasks} />
     </div>
   );
 }
