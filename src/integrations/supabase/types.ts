@@ -104,7 +104,7 @@ export type Database = {
           status: string
           title: string
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           area: string
@@ -117,7 +117,7 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           area?: string

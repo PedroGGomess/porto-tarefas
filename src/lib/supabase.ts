@@ -3,7 +3,7 @@ export { supabase } from '@/integrations/supabase/client';
 
 export type Task = {
   id: string;
-  user_id: string;
+  user_id: string | null;
   title: string;
   description: string | null;
   area: string;
@@ -18,11 +18,11 @@ export type Task = {
 export const AREAS = [
   { value: 'obras', label: 'Obras & Espaço', color: '#f59e0b' },
   { value: 'tech', label: 'Tech & IT', color: '#60a5fa' },
-  { value: 'data', label: 'Analytics & Data', color: '#a78bfa' },
+  { value: 'analytics', label: 'Analytics & Data', color: '#a78bfa' },
   { value: 'crm', label: 'CRM & Digital', color: '#34d399' },
   { value: 'loja', label: 'Experiência Loja', color: '#f472b6' },
   { value: 'stock', label: 'Stock & Produto', color: '#4ade80' },
-  { value: 'ops', label: 'Pessoas & Ops', color: '#fb923c' },
+  { value: 'pessoas', label: 'Pessoas & Ops', color: '#fb923c' },
   { value: 'marketing', label: 'Marketing & Brand', color: '#c084fc' },
   { value: 'finance', label: 'Financeiro', color: '#38bdf8' },
   { value: 'outro', label: 'Outro', color: '#94a3b8' },
