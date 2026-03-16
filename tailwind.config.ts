@@ -13,12 +13,21 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        surface: {
+          DEFAULT: "hsl(var(--surface))",
+          raised: "hsl(var(--surface-raised))",
+        },
+        "border-hover": "hsl(var(--border-hover))",
+        "text-subtle": "hsl(var(--text-subtle))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -57,6 +66,30 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Area accent colors
+        area: {
+          obras: "#f59e0b",
+          tech: "#60a5fa",
+          data: "#a78bfa",
+          crm: "#34d399",
+          loja: "#f472b6",
+          stock: "#4ade80",
+          ops: "#fb923c",
+          marketing: "#c084fc",
+          finance: "#38bdf8",
+          outro: "#94a3b8",
+        },
+        priority: {
+          alta: "#ef4444",
+          media: "#f59e0b",
+          baixa: "#22c55e",
+        },
+        status: {
+          pendente: "#555555",
+          "em-curso": "#60a5fa",
+          concluido: "#22c55e",
+          bloqueado: "#ef4444",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -65,20 +98,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
