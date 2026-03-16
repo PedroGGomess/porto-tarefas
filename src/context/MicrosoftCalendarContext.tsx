@@ -14,7 +14,7 @@ interface MicrosoftCalendarContextType {
   retry: () => void;
 }
 
-const MicrosoftCalendarContext = createContext<MicrosoftCalendarContextType | null>(null);
+export const MicrosoftCalendarContext = createContext<MicrosoftCalendarContextType | null>(null);
 
 function formatDateLisbon(d: Date): string {
   return new Intl.DateTimeFormat('pt-PT', {
