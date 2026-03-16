@@ -19,6 +19,7 @@ const PRIORITY_ORDER: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
 
 export default function Dashboard() {
   const { tasks, isLoading, createTask, updateTask, deleteTask } = useTasks();
+  const { isConnected, todayMeetings } = useMicrosoftCalendar();
   const [filter, setFilter] = useState<{ status: string | null; area: string | null }>({ status: null, area: null });
   const [pillFilter, setPillFilter] = useState('todas');
   const [search, setSearch] = useState('');
@@ -132,6 +133,49 @@ export default function Dashboard() {
 
         {/* Stats */}
         <StatsCards total={counts.total} pendente={counts.pendente} emCurso={counts.emCurso} concluido={counts.concluido} />
+
+        {/* Today's meetings strip */}
+        {isConnected && (
+          <div className="mt-4">
+            <div className="flex items-center gap-2 mb-2">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Hoje</p>
+              <p className="text-[10px] text-muted-foreground">
+                {new Intl.DateTimeFormat('pt-PT', { timeZone: 'Europe/Lisbon', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date())}
+              </p>
+            </div>
+            {todayMeetings.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Sem reuniões hoje</p>
+            ) : (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {todayMeetings.map((meeting) => {
+                  const startUTC = parseUTC(meeting.start.dateTime);
+                  const startTime = new Intl.DateTimeFormat('pt-PT', { timeZone: 'Europe/Lisbon', hour: '2-digit', minute: '2-digit', hour12: false }).format(startUTC);
+                  const now = Date.now();
+                  const startMs = startUTC.getTime();
+                  const isSoon = startMs > now && startMs - now <= 15 * 60 * 1000;
+                  const url = meeting.onlineMeeting?.joinUrl || meeting.webLink;
+                  return (
+                    <a
+                      key={meeting.id}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs text-foreground whitespace-nowrap transition-colors flex-shrink-0 hover:border-border-hover ${
+                        isSoon ? 'border border-blue-500/50' : 'border border-[#1f1f1f]'
+                      }`}
+                      style={{ backgroundColor: '#161616' }}
+                    >
+                      {meeting.onlineMeeting && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+                      )}
+                      <span>{startTime} {meeting.subject}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Progress */}
         <div className="mt-4 mb-5">
