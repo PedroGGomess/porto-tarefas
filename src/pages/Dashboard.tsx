@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTasks } from '@/hooks/useTasks';
 import { Task, STATUSES } from '@/lib/supabase';
-import { useMicrosoftCalendar } from '@/context/MicrosoftCalendarContext';
-import { parseUTC } from '@/lib/graphApi';
+import { useAllUnreadCounts } from '@/hooks/useTaskMessages';
 import AppSidebar from '@/components/AppSidebar';
 import MobileNav from '@/components/MobileNav';
 import StatsCards from '@/components/StatsCards';
@@ -11,6 +10,8 @@ import FilterPills from '@/components/FilterPills';
 import TaskCard from '@/components/TaskCard';
 import TaskModal from '@/components/TaskModal';
 import DeleteDialog from '@/components/DeleteDialog';
+import TaskDetailPanel from '@/components/TaskDetailPanel';
+import InviteModal from '@/components/InviteModal';
 import { Plus, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -25,6 +26,11 @@ export default function Dashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Task | null>(null);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
+  const [inviteTask, setInviteTask] = useState<Task | null>(null);
+
+  const taskIds = useMemo(() => tasks.map(t => t.id), [tasks]);
+  const unreadCounts = useAllUnreadCounts(taskIds);
 
   const counts = useMemo(() => ({
     total: tasks.length,
@@ -210,6 +216,9 @@ export default function Dashboard() {
                 onEdit={(t) => { setEditTask(t); setModalOpen(true); }}
                 onDelete={setDeleteTarget}
                 onStatusCycle={handleStatusCycle}
+                onOpenDetail={setDetailTask}
+                onInvite={setInviteTask}
+                unreadCount={unreadCounts[task.id]}
               />
             ))}
           </div>
@@ -234,6 +243,20 @@ export default function Dashboard() {
         }}
         title={deleteTarget?.title ?? ''}
       />
+
+      <TaskDetailPanel
+        task={detailTask}
+        onClose={() => setDetailTask(null)}
+        onUpdate={(updates) => updateTask.mutate(updates)}
+      />
+
+      {inviteTask && (
+        <InviteModal
+          open={!!inviteTask}
+          onClose={() => setInviteTask(null)}
+          taskId={inviteTask.id}
+        />
+      )}
     </div>
   );
 }
