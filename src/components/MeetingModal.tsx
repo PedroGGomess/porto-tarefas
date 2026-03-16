@@ -42,10 +42,14 @@ export default function MeetingModal({ open, onClose, task }: Props) {
   });
 
   const handleSendEmail = () => {
+    if (!task.responsavel_email) {
+      alert('Não há email do responsável definido para esta tarefa.');
+      return;
+    }
     const datePT = formatDatePT(form.date);
     const subject = `${task.title} — Reunião ${datePT}`;
     const body = generateMeetingEmailBody(task, form);
-    const mailto = `mailto:${task.responsavel_email ?? ''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const mailto = `mailto:${task.responsavel_email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(mailto, '_blank');
   };
 
