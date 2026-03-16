@@ -6,6 +6,7 @@ import { useTaskMembers } from '@/hooks/useTaskMembers';
 import { markTaskAsRead } from '@/hooks/useTaskMessages';
 import InviteModal from './InviteModal';
 import TaskChat from './TaskChat';
+import MeetingModal from './MeetingModal';
 
 type Props = {
   task: Task | null;
@@ -36,6 +37,7 @@ type Tab = 'chat' | 'detalhes';
 export default function TaskDetailPanel({ task, onClose, onUpdate }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('detalhes');
   const [inviteOpen, setInviteOpen] = useState(false);
+  const [meetingModalOpen, setMeetingModalOpen] = useState(false);
   const [form, setForm] = useState<Partial<Task>>({});
   const [editingTitle, setEditingTitle] = useState(false);
 
@@ -51,6 +53,7 @@ export default function TaskDetailPanel({ task, onClose, onUpdate }: Props) {
         status: task.status,
         deadline: task.deadline ?? '',
         responsavel: task.responsavel ?? '',
+        responsavel_email: task.responsavel_email ?? '',
       });
       // Mark as read when opened
       markTaskAsRead(task.id);
@@ -315,6 +318,37 @@ export default function TaskDetailPanel({ task, onClose, onUpdate }: Props) {
                       />
                     </div>
 
+                    {/* Responsavel email */}
+                    <div>
+                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
+                        Email do Responsável
+                      </label>
+                      <input
+                        type="email"
+                        value={form.responsavel_email ?? ''}
+                        onChange={e => setForm(f => ({ ...f, responsavel_email: e.target.value }))}
+                        onBlur={e => handleFieldBlur('responsavel_email', e.target.value)}
+                        placeholder="email@the-100s.com"
+                        className={inputClass}
+                      />
+                      {task.responsavel_email && (
+                        <div className="flex gap-2 mt-1.5">
+                          <a
+                            href={`mailto:${task.responsavel_email}?subject=Re: ${encodeURIComponent(task.title)}&body=${encodeURIComponent(`Olá,\n\nEm relação à tarefa "${task.title}":\n\n`)}`}
+                            className="text-xs px-2 py-1 rounded border border-border text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors"
+                          >
+                            ✉️ Enviar email
+                          </a>
+                          <button
+                            onClick={() => setMeetingModalOpen(true)}
+                            className="text-xs px-2 py-1 rounded border border-border text-muted-foreground hover:text-foreground hover:border-border-hover transition-colors"
+                          >
+                            📅 Agendar reunião
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Description */}
                     <div>
                       <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 block">
@@ -378,6 +412,14 @@ export default function TaskDetailPanel({ task, onClose, onUpdate }: Props) {
         onClose={() => setInviteOpen(false)}
         taskId={task.id}
       />
+
+      {task && (
+        <MeetingModal
+          open={meetingModalOpen}
+          onClose={() => setMeetingModalOpen(false)}
+          task={{ ...task, ...form } as Task}
+        />
+      )}
     </>
   );
 }

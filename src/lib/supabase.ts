@@ -11,6 +11,7 @@ export type Task = {
   status: string;
   deadline: string | null;
   responsavel: string | null;
+  responsavel_email: string | null;
   created_at: string;
   updated_at: string;
 };

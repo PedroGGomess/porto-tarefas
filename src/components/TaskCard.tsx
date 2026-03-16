@@ -1,6 +1,6 @@
 import { Task, getAreaColor, getAreaLabel, getPriorityColor, getStatusInfo, STATUSES } from '@/lib/supabase';
 import { motion } from 'framer-motion';
-import { Pencil, Trash2, User, CalendarDays, UserPlus } from 'lucide-react';
+import { Pencil, Trash2, User, CalendarDays, UserPlus, Mail } from 'lucide-react';
 import { format, isPast, parseISO } from 'date-fns';
 import { useTaskMembers } from '@/hooks/useTaskMembers';
 
@@ -127,6 +127,16 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
                 <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
                   <User size={10} />
                   {task.responsavel}
+                  {task.responsavel_email && (
+                    <a
+                      href={`mailto:${task.responsavel_email}?subject=Re: ${encodeURIComponent(task.title)}&body=${encodeURIComponent(`Olá,\n\nEm relação à tarefa "${task.title}":\n\n`)}`}
+                      onClick={e => e.stopPropagation()}
+                      title={`Enviar email para ${task.responsavel}`}
+                      className="text-[#555] hover:text-[#f59e0b] transition-colors"
+                    >
+                      <Mail size={12} />
+                    </a>
+                  )}
                 </span>
               )}
 

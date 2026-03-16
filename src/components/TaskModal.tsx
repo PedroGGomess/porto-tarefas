@@ -18,6 +18,7 @@ const emptyForm = {
   status: 'pendente',
   deadline: '',
   responsavel: '',
+  responsavel_email: '',
 };
 
 export default function TaskModal({ open, onClose, onSave, task }: Props) {
@@ -33,6 +34,7 @@ export default function TaskModal({ open, onClose, onSave, task }: Props) {
         status: task.status,
         deadline: task.deadline ?? '',
         responsavel: task.responsavel ?? '',
+        responsavel_email: task.responsavel_email ?? '',
       });
     } else {
       setForm(emptyForm);
@@ -46,6 +48,7 @@ export default function TaskModal({ open, onClose, onSave, task }: Props) {
       description: form.description || null,
       deadline: form.deadline || null,
       responsavel: form.responsavel || null,
+      responsavel_email: form.responsavel_email || null,
     } as any);
     onClose();
   };
@@ -161,6 +164,17 @@ export default function TaskModal({ open, onClose, onSave, task }: Props) {
                   onChange={(e) => setForm({ ...form, responsavel: e.target.value })}
                   className={inputClass}
                   placeholder="Nome do responsável"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Email do responsável</label>
+                <input
+                  type="email"
+                  value={form.responsavel_email}
+                  onChange={(e) => setForm({ ...form, responsavel_email: e.target.value })}
+                  className={inputClass}
+                  placeholder="email@the-100s.com"
                 />
               </div>
 
