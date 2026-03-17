@@ -71,7 +71,7 @@ export function useTaskMessages(taskId: string | null) {
   const sendAiMessage = useMutation({
     mutationFn: async ({ content }: { content: string }) => {
       if (!taskId || !user) throw new Error('Sem sessão');
-      const { error } = await supabase.from('task_messages').insert({
+      const { error } = await (supabase as any).from('task_messages').insert({
         task_id: taskId,
         user_id: user.id,
         sender_email: 'ai@sistema',
