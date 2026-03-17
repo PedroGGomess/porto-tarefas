@@ -14,84 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      task_members: {
-        Row: {
-          id: string
-          task_id: string | null
-          email: string
-          invited_by: string | null
-          joined_at: string | null
-        }
-        Insert: {
-          id?: string
-          task_id?: string | null
-          email: string
-          invited_by?: string | null
-          joined_at?: string | null
-        }
-        Update: {
-          id?: string
-          task_id?: string | null
-          email?: string
-          invited_by?: string | null
-          joined_at?: string | null
-        }
-        Relationships: []
-      }
-      team_directory: {
-        Row: {
-          id: string
-          user_id: string | null
-          email: string
-          name: string | null
-          avatar_color: string | null
-        }
-        Insert: {
-          id?: string
-          user_id?: string | null
-          email: string
-          name?: string | null
-          avatar_color?: string | null
-        }
-        Update: {
-          id?: string
-          user_id?: string | null
-          email?: string
-          name?: string | null
-          avatar_color?: string | null
-        }
-        Relationships: []
-      }
-      task_messages: {
-        Row: {
-          id: string
-          task_id: string | null
-          user_id: string | null
-          sender_email: string
-          content: string
-          is_ai: boolean | null
-          created_at: string | null
-        }
-        Insert: {
-          id?: string
-          task_id?: string | null
-          user_id?: string | null
-          sender_email: string
-          content: string
-          is_ai?: boolean | null
-          created_at?: string | null
-        }
-        Update: {
-          id?: string
-          task_id?: string | null
-          user_id?: string | null
-          sender_email?: string
-          content?: string
-          is_ai?: boolean | null
-          created_at?: string | null
-        }
-        Relationships: []
-      }
       tasks: {
         Row: {
           area: string
@@ -104,7 +26,7 @@ export type Database = {
           status: string
           title: string
           updated_at: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           area: string
@@ -117,7 +39,7 @@ export type Database = {
           status?: string
           title: string
           updated_at?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           area?: string
