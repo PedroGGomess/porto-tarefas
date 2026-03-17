@@ -31,53 +31,56 @@ export default function Login() {
 
   return (
     <div
-      className="grain-overlay min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
+      className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
       style={{
-        background: 'radial-gradient(ellipse at center, #0f0f0f 0%, #050505 100%)',
+        background: '#080808',
       }}
     >
-      {/* Floating golden particles */}
-      {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="particle" />
-      ))}
+      {/* Radial glow */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse at 50% 40%, rgba(245,158,11,0.06) 0%, transparent 70%)',
+      }} />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut' }}
         className="w-full relative z-10"
-        style={{ maxWidth: 420 }}
+        style={{ maxWidth: 400 }}
       >
         <div
-          className="p-12 relative"
           style={{
             background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid rgba(255, 255, 255, 0.09)',
             borderRadius: 24,
-            backdropFilter: 'blur(40px) saturate(180%)',
-            boxShadow: '0 40px 80px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
+            backdropFilter: 'blur(40px)',
+            boxShadow: '0 40px 80px rgba(0, 0, 0, 0.5)',
+            padding: 40,
           }}
         >
           {/* Logo area */}
-          <div className="flex flex-col items-center mb-8">
+          <div className="flex flex-col items-center" style={{ marginBottom: 28 }}>
             <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
               style={{
+                width: 44, height: 44, borderRadius: 10,
                 background: '#000',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                marginBottom: 12,
               }}
             >
-              <span className="text-white text-lg font-bold tracking-tight">100</span>
+              <span className="text-white font-bold" style={{ fontSize: 14, letterSpacing: '-0.5px' }}>100</span>
             </div>
             <h1
               className="text-white font-semibold uppercase"
-              style={{ fontSize: 13, letterSpacing: '0.25em' }}
+              style={{ fontSize: 12, letterSpacing: '0.25em' }}
             >
-              The 100's
+              THE 100'S
             </h1>
             <p
               className="mt-1"
-              style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 12, letterSpacing: '0.1em' }}
+              style={{ color: 'rgba(255, 255, 255, 0.4)', fontSize: 11, letterSpacing: '0.05em' }}
             >
               Gestor de Tarefas
             </p>
@@ -110,9 +113,9 @@ export default function Login() {
                 style={{
                   background: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: 12,
-                  padding: '14px 16px',
-                  fontSize: 15,
+                  borderRadius: 10,
+                  padding: '13px 16px',
+                  fontSize: 13,
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
@@ -152,9 +155,9 @@ export default function Login() {
                 style={{
                   background: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: 12,
-                  padding: '14px 16px',
-                  fontSize: 15,
+                  borderRadius: 10,
+                  padding: '13px 16px',
+                  fontSize: 13,
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
@@ -178,10 +181,11 @@ export default function Login() {
                 disabled={loading}
                 className="w-full flex items-center justify-center gap-2 text-black font-semibold transition-all duration-150 active:scale-[0.99]"
                 style={{
-                  height: 48,
+                  height: 46,
                   borderRadius: 12,
                   background: loading ? 'rgba(255, 255, 255, 0.85)' : 'white',
-                  fontSize: 15,
+                  fontSize: 14,
+                  fontWeight: 700,
                   letterSpacing: '0.02em',
                 }}
                 onMouseEnter={(e) => {

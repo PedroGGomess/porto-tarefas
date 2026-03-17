@@ -259,44 +259,13 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
         </div>
       </nav>
 
-      {/* Claude AI card */}
-      <div className="px-4 pb-3">
-        <button
-          onClick={() => window.open('https://claude.ai', '_blank')}
-          className="w-full text-left transition-all duration-150"
-          style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 10,
-            padding: '10px 12px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(245,158,11,0.3)';
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(245,158,11,0.08)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.08)';
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
-          }}
-        >
-          <span style={{ fontSize: 16, color: '#f59e0b', flexShrink: 0 }}>✦</span>
-          <div>
-            <p style={{ fontSize: 13, fontWeight: 700, color: 'white', lineHeight: 1.3 }}>Claude AI</p>
-            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', lineHeight: 1.3 }}>Abrir assistente</p>
-          </div>
-        </button>
-      </div>
-
-      {/* User */}
+      {/* Bottom section */}
       <div
         className="px-4 py-4"
         style={{ borderTop: '1px solid var(--glass-divider)' }}
       >
-        <div className="flex items-center gap-2.5">
+        {/* User info */}
+        <div className="flex items-center gap-2.5 mb-3">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
             style={{ backgroundColor: emailToColor(user?.email ?? '') }}
@@ -309,15 +278,47 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
             </p>
           </div>
         </div>
+
+        {/* Claude AI button */}
+        <button
+          onClick={() => window.open('https://claude.ai', '_blank')}
+          className="w-full flex items-center justify-center gap-1.5 mb-2 transition-all duration-150"
+          style={{
+            background: 'rgba(245,158,11,0.07)',
+            border: '1px solid rgba(245,158,11,0.18)',
+            borderRadius: 8,
+            padding: '7px 10px',
+            color: '#f59e0b',
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(245,158,11,0.12)'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(245,158,11,0.07)'; }}
+        >
+          <span>✦</span>
+          <span>Claude AI</span>
+        </button>
+
+        {/* Sign out button */}
         <button
           onClick={signOut}
-          className="flex items-center gap-1.5 mt-2 transition-colors duration-150"
-          style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)' }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#ef4444'; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.3)'; }}
+          className="w-full flex items-center justify-center gap-1.5 transition-all duration-150"
+          style={{
+            background: 'rgba(239,68,68,0.08)',
+            border: '1px solid rgba(239,68,68,0.2)',
+            borderRadius: 8,
+            padding: '8px 10px',
+            color: '#ef4444',
+            fontSize: 12,
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.15)'; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.08)'; }}
         >
           <LogOut size={12} />
-          Sair
+          Terminar Sessão
         </button>
       </div>
     </aside>
