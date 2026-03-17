@@ -88,15 +88,25 @@ export function MicrosoftCalendarProvider({ children }: { children: React.ReactN
   }, [accounts, instance, fetchMeetingsWithToken]);
 
   const connect = useCallback(async () => {
+    setError(null);
     try {
-      await instance.initialize();
+      // Do NOT call instance.initialize() here – MsalProvider already handles
+      // initialization, and awaiting it breaks the user-gesture chain which
+      // causes browsers to block the popup window.
       const result = await instance.loginPopup(loginRequest);
       const account = result.account;
       instance.setActiveAccount(account);
       setIsConnected(true);
       await fetchMeetingsWithToken(result.accessToken);
-    } catch (error) {
-      console.error('[MS Login] Error:', error);
+    } catch (err: unknown) {
+      console.error('[MS Login] Error:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      // Ignore deliberate user cancellations; surface all other errors
+      if (!message.includes('user_cancelled') && !message.includes('interaction_in_progress')) {
+        setError(
+          'Não foi possível ligar a conta Microsoft. Verifica se os popups estão permitidos no browser e tenta novamente.'
+        );
+      }
     }
   }, [instance, fetchMeetingsWithToken]);
 
