@@ -1,5 +1,10 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { msalInstance } from "@/lib/msalConfig";
 
-createRoot(document.getElementById("root")!).render(<App />);
+msalInstance.initialize().then(() => {
+  createRoot(document.getElementById("root")!).render(<App />);
+}).catch((error) => {
+  console.error("[MSAL] Initialization failed:", error);
+});

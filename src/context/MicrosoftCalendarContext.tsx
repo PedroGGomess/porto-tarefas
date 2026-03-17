@@ -89,11 +89,14 @@ export function MicrosoftCalendarProvider({ children }: { children: React.ReactN
 
   const connect = useCallback(async () => {
     try {
+      await instance.initialize();
       const result = await instance.loginPopup(loginRequest);
+      const account = result.account;
+      instance.setActiveAccount(account);
       setIsConnected(true);
       await fetchMeetingsWithToken(result.accessToken);
-    } catch (e) {
-      console.error('MSAL login error:', e);
+    } catch (error) {
+      console.error('[MS Login] Error:', error);
     }
   }, [instance, fetchMeetingsWithToken]);
 
