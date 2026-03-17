@@ -1,1 +1,4 @@
 project_id = "nmbdbtcaxitpyuxicsvk"
+
+[functions.ask-ai]
+verify_jwt = false
