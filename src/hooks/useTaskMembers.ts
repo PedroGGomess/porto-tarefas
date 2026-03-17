@@ -19,13 +19,13 @@ export function useTaskMembers(taskId: string | null) {
     queryKey: ['task_members', taskId],
     queryFn: async () => {
       if (!taskId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('task_members')
         .select('*')
         .eq('task_id', taskId)
         .order('joined_at', { ascending: true });
       if (error) throw error;
-      return data as TaskMember[];
+      return (data ?? []) as TaskMember[];
     },
     enabled: !!taskId,
   });
