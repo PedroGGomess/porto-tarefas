@@ -236,13 +236,24 @@ export default function Reunioes() {
                 </p>
               </div>
 
-             <button
-  onClick={connect}
-  className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
-  style={{ backgroundColor: '#ffffff', color: '#000000' }}
->
-  Ligar conta Microsoft
-</button>
+              <button
+                onClick={() => {
+                  if (!isMsConfigured) {
+                    alert("Configuração Microsoft em falta. Contacta o administrador.");
+                    return;
+                  }
+                  connect();
+                }}
+                className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                style={{ backgroundColor: '#ffffff', color: '#000000' }}
+              >
+                Ligar conta Microsoft
+              </button>
+              {!isMsConfigured && (
+                <p className="text-[11px] mt-2" style={{ color: '#ef4444' }}>
+                  ⚠️ VITE_MS_CLIENT_ID não está configurado
+                </p>
+              )}
             </div>
           </div>
         ) : isLoading ? (
