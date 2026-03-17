@@ -24,39 +24,55 @@ serve(async (req: Request) => {
   try {
     const { systemPrompt, messages, userMessage } = await req.json() as RequestBody;
 
-    const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
+    const apiKey = Deno.env.get('LOVABLE_API_KEY');
     if (!apiKey) {
       return new Response(
-        JSON.stringify({ error: 'ANTHROPIC_API_KEY não configurado' }),
+        JSON.stringify({ error: 'LOVABLE_API_KEY não configurado' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 1024,
-        system: systemPrompt,
-        messages: [...messages, { role: 'user', content: userMessage }],
+        model: 'google/gemini-3-flash-preview',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages,
+          { role: 'user', content: userMessage },
+        ],
       }),
     });
 
-    if (!response.ok) {
-      const err = await response.json() as { error?: { message?: string } };
+    if (response.status === 429) {
       return new Response(
-        JSON.stringify({ error: err?.error?.message ?? `Erro ${response.status}` }),
+        JSON.stringify({ error: 'Limite de pedidos excedido. Tenta novamente em breve.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
+    if (response.status === 402) {
+      return new Response(
+        JSON.stringify({ error: 'Créditos AI esgotados.' }),
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('AI gateway error:', response.status, err);
+      return new Response(
+        JSON.stringify({ error: `Erro ${response.status}` }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
       );
     }
 
-    const data = await response.json() as { content?: Array<{ text: string }> };
-    const text = data.content?.[0]?.text ?? 'Sem resposta da AI.';
+    const data = await response.json();
+    const text = data.choices?.[0]?.message?.content ?? 'Sem resposta da AI.';
 
     return new Response(
       JSON.stringify({ text }),
