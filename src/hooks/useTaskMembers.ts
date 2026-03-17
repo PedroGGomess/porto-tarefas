@@ -32,7 +32,7 @@ export function useTaskMembers(taskId: string | null) {
 
   const addMember = useMutation({
     mutationFn: async ({ taskId, email }: { taskId: string; email: string }) => {
-      const { error } = await supabase.from('task_members').insert({
+      const { error } = await (supabase as any).from('task_members').insert({
         task_id: taskId,
         email,
         invited_by: user!.id,
