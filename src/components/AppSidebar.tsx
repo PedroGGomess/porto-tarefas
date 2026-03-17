@@ -7,7 +7,7 @@ import { LogOut, ListTodo, Clock, RefreshCw, CheckCircle2, Ban } from 'lucide-re
 type Filter = {
   status: string | null;
   area: string | null;
-  responsavel?: string | null;
+  responsavel: string | null;
 };
 
 type Props = {

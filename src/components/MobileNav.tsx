@@ -1,6 +1,6 @@
 import { ListTodo, Clock, RefreshCw, CheckCircle2, Ban } from 'lucide-react';
 
-type Filter = { status: string | null; area: string | null; responsavel?: string | null };
+type Filter = { status: string | null; area: string | null; responsavel: string | null };
 
 const tabs = [
   { label: 'Todas', status: null, icon: ListTodo },
