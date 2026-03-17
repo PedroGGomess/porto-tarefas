@@ -24,7 +24,7 @@ const navItems = [
   { label: 'Bloqueadas', status: 'bloqueado', icon: Ban },
 ];
 
-const defaultFilter: Filter = { status: null, area: null };
+const defaultFilter: Filter = { status: null, area: null, responsavel: null };
 const defaultCounts = { total: 0, pendente: 0, emCurso: 0, concluido: 0, bloqueado: 0 };
 
 export default function AppSidebar({ filter = defaultFilter, setFilter = () => {}, counts = defaultCounts }: Props) {
