@@ -1,21 +1,25 @@
 import { Configuration, PublicClientApplication } from "@azure/msal-browser";
 
 const clientId = import.meta.env.VITE_MS_CLIENT_ID ?? "";
-const tenantId = (import.meta.env.VITE_MS_TENANT_ID as string | undefined) ?? 'common';
-const redirectUri = (import.meta.env.VITE_MS_REDIRECT_URI as string | undefined) ?? window.location.origin;
+const tenantId = import.meta.env.VITE_MS_TENANT_ID ?? "common";
+const redirectUri = import.meta.env.VITE_MS_REDIRECT_URI ?? window.location.origin;
 
-if (!clientId) {
-  console.warn("[msalConfig] VITE_MS_CLIENT_ID is not set — Microsoft login is disabled.");
+const isValidValue = (v: string | undefined) =>
+  !!v && v !== "undefined" && v !== "null" && v.trim() !== "";
+
+export const isMsConfigured =
+  isValidValue(import.meta.env.VITE_MS_CLIENT_ID) &&
+  isValidValue(import.meta.env.VITE_MS_TENANT_ID);
+
+if (!isMsConfigured) {
+  console.warn("[msalConfig] Microsoft login disabled — vars missing or invalid.");
+} else {
+  console.log("[msalConfig] ✅ Configured. ClientID:", clientId.slice(0, 8) + "...");
 }
-
-export const isMsConfigured = !!(
-  import.meta.env.VITE_MS_CLIENT_ID &&
-  import.meta.env.VITE_MS_TENANT_ID
-);
 
 export const msalConfig: Configuration = {
   auth: {
-    clientId,
+    clientId: isValidValue(clientId) ? clientId : "placeholder",
     authority: `https://login.microsoftonline.com/${tenantId}`,
     redirectUri,
   },
@@ -29,4 +33,6 @@ export const loginRequest = {
   scopes: ["Calendars.Read", "User.Read"],
 };
 
-export const msalInstance = new PublicClientApplication(msalConfig);
+export const msalInstance = isMsConfigured
+  ? new PublicClientApplication(msalConfig)
+  : null;
