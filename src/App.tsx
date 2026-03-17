@@ -8,6 +8,8 @@ import { msalInstance } from "@/lib/msalConfig";
 import { MicrosoftCalendarProvider } from "@/context/MicrosoftCalendarContext";
 import Index from "./pages/Index.tsx";
 import Reunioes from "./pages/Reunioes.tsx";
+import Chat from "./pages/Chat.tsx";
+import Ficheiros from "./pages/Ficheiros.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -23,6 +25,8 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/reunioes" element={<Reunioes />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route path="/ficheiros" element={<Ficheiros />} />
                 <Route path="/auth/callback" element={<Navigate to="/" replace />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

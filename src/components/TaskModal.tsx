@@ -21,6 +21,104 @@ const emptyForm = {
   responsavel_email: '',
 };
 
+const labelStyle: React.CSSProperties = {
+  fontSize: 11,
+  color: 'rgba(255,255,255,0.4)',
+  fontWeight: 600,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  marginBottom: 6,
+  display: 'block',
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  padding: '12px 14px',
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: 10,
+  color: 'white',
+  fontSize: 14,
+  outline: 'none',
+  transition: 'border-color 0.15s, box-shadow 0.15s',
+};
+
+function StyledInput({ value, onChange, placeholder, type = 'text', required }: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+  required?: boolean;
+}) {
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      placeholder={placeholder}
+      required={required}
+      style={{ ...inputStyle, colorScheme: 'dark' } as React.CSSProperties}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.3)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.05)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.1)';
+        e.target.style.boxShadow = 'none';
+      }}
+    />
+  );
+}
+
+function StyledTextarea({ value, onChange, placeholder, rows = 3 }: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  rows?: number;
+}) {
+  return (
+    <textarea
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      placeholder={placeholder}
+      rows={rows}
+      style={{ ...inputStyle, resize: 'none' } as React.CSSProperties}
+      onFocus={e => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.3)';
+        e.target.style.boxShadow = '0 0 0 3px rgba(255,255,255,0.05)';
+      }}
+      onBlur={e => {
+        e.target.style.borderColor = 'rgba(255,255,255,0.1)';
+        e.target.style.boxShadow = 'none';
+      }}
+    />
+  );
+}
+
+function StyledSelect({ value, onChange, children }: {
+  value: string;
+  onChange: (v: string) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      style={{ ...inputStyle, colorScheme: 'dark', cursor: 'pointer' } as React.CSSProperties}
+      onFocus={e => {
+        (e.target as HTMLSelectElement).style.borderColor = 'rgba(255,255,255,0.3)';
+        (e.target as HTMLSelectElement).style.boxShadow = '0 0 0 3px rgba(255,255,255,0.05)';
+      }}
+      onBlur={e => {
+        (e.target as HTMLSelectElement).style.borderColor = 'rgba(255,255,255,0.1)';
+        (e.target as HTMLSelectElement).style.boxShadow = 'none';
+      }}
+    >
+      {children}
+    </select>
+  );
+}
+
 export default function TaskModal({ open, onClose, onSave, task }: Props) {
   const [form, setForm] = useState(emptyForm);
 
@@ -49,12 +147,9 @@ export default function TaskModal({ open, onClose, onSave, task }: Props) {
       deadline: form.deadline || null,
       responsavel: form.responsavel || null,
       responsavel_email: form.responsavel_email || null,
-    } as any);
+    } as Omit<Task, 'id' | 'user_id' | 'created_at' | 'updated_at'>);
     onClose();
   };
-
-  const inputClass =
-    'w-full px-3 py-2.5 rounded-lg bg-background border border-border text-foreground text-sm focus:outline-none focus:border-border-hover transition-colors';
 
   return (
     <AnimatePresence>
@@ -63,134 +158,245 @@ export default function TaskModal({ open, onClose, onSave, task }: Props) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.7)] backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}
           onClick={onClose}
         >
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.97 }}
+            initial={{ opacity: 0, y: 24, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.97 }}
-            transition={{ duration: 0.25 }}
-            className="bg-card border border-border rounded-2xl p-7 w-full max-w-[500px] max-h-[90vh] overflow-y-auto"
+            exit={{ opacity: 0, y: 24, scale: 0.97 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              width: '100%',
+              maxWidth: 560,
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              background: '#0f0f0f',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 20,
+              boxShadow: '0 40px 80px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.06)',
+              padding: 32,
+              backdropFilter: 'blur(40px)',
+            }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-foreground">
-                {task ? 'Editar Tarefa' : 'Nova Tarefa'}
-              </h2>
-              <button onClick={onClose} className="p-1 hover:bg-surface-raised rounded-md transition-colors">
-                <X size={16} className="text-muted-foreground" />
+            {/* Header */}
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h2 style={{ color: 'white', fontSize: 20, fontWeight: 700, letterSpacing: '-0.03em', margin: 0 }}>
+                  {task ? 'Editar Tarefa' : 'Nova Tarefa'}
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginTop: 4 }}>
+                  Preenche os detalhes abaixo
+                </p>
+              </div>
+              <button
+                onClick={onClose}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.08)',
+                  border: 'none',
+                  color: 'white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.15)'; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; }}
+              >
+                <X size={14} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Title */}
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Título *</label>
-                <input
+                <label style={labelStyle}>Título da Tarefa *</label>
+                <StyledInput
                   required
                   value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className={inputClass}
+                  onChange={v => setForm({ ...form, title: v })}
                   placeholder="Título da tarefa"
                 />
               </div>
 
+              {/* Description */}
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Descrição</label>
-                <textarea
-                  rows={3}
+                <label style={labelStyle}>Descrição</label>
+                <StyledTextarea
                   value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className={inputClass + ' resize-none'}
+                  onChange={v => setForm({ ...form, description: v })}
                   placeholder="Descrição opcional"
+                  rows={3}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Área</label>
-                  <select
-                    value={form.area}
-                    onChange={(e) => setForm({ ...form, area: e.target.value })}
-                    className={inputClass}
-                  >
-                    {AREAS.map((a) => (
-                      <option key={a.value} value={a.value}>{a.label}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Prioridade</label>
-                  <select
-                    value={form.priority}
-                    onChange={(e) => setForm({ ...form, priority: e.target.value })}
-                    className={inputClass}
-                  >
-                    {PRIORITIES.map((p) => (
-                      <option key={p.value} value={p.value}>{p.label}</option>
-                    ))}
-                  </select>
+              {/* Area selector — visual pills */}
+              <div>
+                <label style={labelStyle}>Área</label>
+                <div className="flex flex-wrap gap-2">
+                  {AREAS.map(a => {
+                    const selected = form.area === a.value;
+                    return (
+                      <button
+                        key={a.value}
+                        type="button"
+                        onClick={() => setForm({ ...form, area: a.value })}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          padding: '6px 12px',
+                          borderRadius: 99,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          background: selected ? `${a.color}26` : 'rgba(255,255,255,0.04)',
+                          border: `1px solid ${selected ? a.color : 'rgba(255,255,255,0.1)'}`,
+                          color: selected ? a.color : 'rgba(255,255,255,0.5)',
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: '50%',
+                            backgroundColor: a.color,
+                            flexShrink: 0,
+                          }}
+                        />
+                        {a.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
+              {/* Priority selector — 3 large toggle buttons */}
+              <div>
+                <label style={labelStyle}>Prioridade</label>
+                <div className="flex gap-2">
+                  {PRIORITIES.map(p => {
+                    const selected = form.priority === p.value;
+                    const emoji = p.value === 'alta' ? '🔴' : p.value === 'media' ? '🟡' : '🟢';
+                    return (
+                      <button
+                        key={p.value}
+                        type="button"
+                        onClick={() => setForm({ ...form, priority: p.value })}
+                        style={{
+                          flex: 1,
+                          padding: '10px 8px',
+                          borderRadius: 10,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          background: selected ? `${p.color}22` : 'rgba(255,255,255,0.04)',
+                          border: `1px solid ${selected ? p.color : 'rgba(255,255,255,0.1)'}`,
+                          color: selected ? p.color : 'rgba(255,255,255,0.5)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 6,
+                        }}
+                      >
+                        <span>{emoji}</span>
+                        {p.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Estado + Prazo */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Estado</label>
-                  <select
-                    value={form.status}
-                    onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className={inputClass}
-                  >
-                    {STATUSES.map((s) => (
+                  <label style={labelStyle}>Estado</label>
+                  <StyledSelect value={form.status} onChange={v => setForm({ ...form, status: v })}>
+                    {STATUSES.map(s => (
                       <option key={s.value} value={s.value}>{s.icon} {s.label}</option>
                     ))}
-                  </select>
+                  </StyledSelect>
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Prazo</label>
-                  <input
+                  <label style={labelStyle}>Prazo</label>
+                  <StyledInput
                     type="date"
                     value={form.deadline}
-                    onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-                    className={inputClass}
+                    onChange={v => setForm({ ...form, deadline: v })}
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Responsável</label>
-                <input
-                  value={form.responsavel}
-                  onChange={(e) => setForm({ ...form, responsavel: e.target.value })}
-                  className={inputClass}
-                  placeholder="Nome do responsável"
-                />
+              {/* Responsável + Email */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label style={labelStyle}>Responsável</label>
+                  <StyledInput
+                    value={form.responsavel}
+                    onChange={v => setForm({ ...form, responsavel: v })}
+                    placeholder="Nome do responsável"
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Email</label>
+                  <StyledInput
+                    type="email"
+                    value={form.responsavel_email}
+                    onChange={v => setForm({ ...form, responsavel_email: v })}
+                    placeholder="email@the-100s.com"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Email do responsável</label>
-                <input
-                  type="email"
-                  value={form.responsavel_email}
-                  onChange={(e) => setForm({ ...form, responsavel_email: e.target.value })}
-                  className={inputClass}
-                  placeholder="email@the-100s.com"
-                />
-              </div>
-
+              {/* Footer */}
               <div className="flex justify-end gap-2 pt-2">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 rounded-lg border border-border text-muted-foreground text-sm hover:bg-surface-raised transition-colors"
+                  style={{
+                    height: 44,
+                    padding: '0 20px',
+                    borderRadius: 10,
+                    background: 'rgba(255,255,255,0.08)',
+                    color: 'white',
+                    fontSize: 14,
+                    fontWeight: 600,
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'background 0.15s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.13)'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.08)'; }}
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 transition-opacity"
+                  style={{
+                    height: 44,
+                    padding: '0 24px',
+                    borderRadius: 10,
+                    background: 'white',
+                    color: 'black',
+                    fontSize: 14,
+                    fontWeight: 700,
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'opacity 0.15s',
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '0.9'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
                 >
-                  {task ? 'Guardar' : 'Adicionar'}
+                  {task ? 'Guardar Alterações' : 'Adicionar Tarefa'}
                 </button>
               </div>
             </form>

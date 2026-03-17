@@ -149,6 +149,62 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
               </span>
             )}
           </button>
+
+          {/* Chat de Equipa */}
+          <button
+            onClick={() => navigate('/chat')}
+            className="w-full flex items-center gap-2.5 rounded-[10px] transition-all duration-150"
+            style={{
+              padding: '8px 12px',
+              fontSize: 13,
+              fontWeight: location.pathname === '/chat' ? 600 : 500,
+              color: location.pathname === '/chat' ? 'white' : 'rgba(255,255,255,0.5)',
+              background: location.pathname === '/chat' ? 'rgba(255,255,255,0.08)' : 'transparent',
+            }}
+            onMouseEnter={(e) => {
+              if (location.pathname !== '/chat') {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (location.pathname !== '/chat') {
+                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)';
+              }
+            }}
+          >
+            <span className="text-base leading-none">💬</span>
+            <span className="flex-1 text-left">Chat de Equipa</span>
+          </button>
+
+          {/* Ficheiros */}
+          <button
+            onClick={() => navigate('/ficheiros')}
+            className="w-full flex items-center gap-2.5 rounded-[10px] transition-all duration-150"
+            style={{
+              padding: '8px 12px',
+              fontSize: 13,
+              fontWeight: location.pathname === '/ficheiros' ? 600 : 500,
+              color: location.pathname === '/ficheiros' ? 'white' : 'rgba(255,255,255,0.5)',
+              background: location.pathname === '/ficheiros' ? 'rgba(255,255,255,0.08)' : 'transparent',
+            }}
+            onMouseEnter={(e) => {
+              if (location.pathname !== '/ficheiros') {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)';
+                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (location.pathname !== '/ficheiros') {
+                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)';
+              }
+            }}
+          >
+            <span className="text-base leading-none">📁</span>
+            <span className="flex-1 text-left">Ficheiros</span>
+          </button>
         </div>
 
         {/* Area filters */}
@@ -202,6 +258,38 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
           })}
         </div>
       </nav>
+
+      {/* Claude AI card */}
+      <div className="px-4 pb-3">
+        <button
+          onClick={() => window.open('https://claude.ai', '_blank')}
+          className="w-full text-left transition-all duration-150"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 10,
+            padding: '10px 12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(245,158,11,0.3)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(245,158,11,0.08)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.08)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+          }}
+        >
+          <span style={{ fontSize: 16, color: '#f59e0b', flexShrink: 0 }}>✦</span>
+          <div>
+            <p style={{ fontSize: 13, fontWeight: 700, color: 'white', lineHeight: 1.3 }}>Claude AI</p>
+            <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', lineHeight: 1.3 }}>Abrir assistente</p>
+          </div>
+        </button>
+      </div>
 
       {/* User */}
       <div

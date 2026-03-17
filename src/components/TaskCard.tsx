@@ -1,7 +1,7 @@
-import { Task, getAreaColor, getAreaLabel, getPriorityColor, getStatusInfo, STATUSES } from '@/lib/supabase';
+import { Task, getAreaColor, getAreaLabel, getPriorityColor, getStatusInfo } from '@/lib/supabase';
 import { motion } from 'framer-motion';
-import { Pencil, Trash2, User, CalendarDays, UserPlus, Mail } from 'lucide-react';
-import { format, isPast, parseISO } from 'date-fns';
+import { Pencil, Trash2, UserPlus, Mail, CalendarPlus } from 'lucide-react';
+import { isPast, parseISO, differenceInDays, isToday } from 'date-fns';
 import { useTaskMembers } from '@/hooks/useTaskMembers';
 
 const AVATAR_COLORS = [
@@ -16,6 +16,15 @@ function emailToColor(email: string): string {
     hash |= 0;
   }
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+function getRelativeDeadline(deadline: string, status: string): { text: string; color: string } {
+  const date = parseISO(deadline);
+  if (isToday(date)) return { text: 'hoje', color: '#f59e0b' };
+  const diff = differenceInDays(date, new Date());
+  if (diff > 0) return { text: `em ${diff} dia${diff !== 1 ? 's' : ''}`, color: diff <= 3 ? '#f59e0b' : 'rgba(255,255,255,0.4)' };
+  if (status === 'concluido') return { text: `há ${Math.abs(diff)} dia${Math.abs(diff) !== 1 ? 's' : ''}`, color: 'rgba(255,255,255,0.3)' };
+  return { text: `há ${Math.abs(diff)} dia${Math.abs(diff) !== 1 ? 's' : ''}`, color: '#ef4444' };
 }
 
 type Props = {
@@ -40,26 +49,33 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
   const visibleMembers = members.slice(0, 3);
   const extraCount = members.length - 3;
 
+  const deadlineInfo = task.deadline ? getRelativeDeadline(task.deadline, task.status) : null;
+
+  const handleScheduleMeeting = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const subject = encodeURIComponent(`Reunião: ${task.title}`);
+    const body = encodeURIComponent(`Reunião sobre a tarefa "${task.title}"\n\nÁrea: ${getAreaLabel(task.area)}\nResponsável: ${task.responsavel ?? 'N/A'}\n`);
+    window.open(`https://calendar.google.com/calendar/r/eventedit?text=${subject}&details=${body}`, '_blank');
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      transition={{ delay: index * 0.04, duration: 0.3 }}
+      transition={{ delay: index * 0.05, duration: 0.3 }}
       className="group relative transition-all duration-200 hover:-translate-y-px"
       style={{
         background: isOverdue ? 'rgba(239,68,68,0.03)' : 'rgba(255,255,255,0.02)',
         border: '1px solid var(--glass-border)',
-        borderLeft: isOverdue ? '2px solid #ef4444' : '1px solid var(--glass-border)',
+        borderLeft: `3px solid ${isOverdue ? '#ef4444' : areaColor}`,
         borderRadius: 14,
         padding: '16px 18px',
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--glass-border-hover)';
         (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.04)';
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--glass-border)';
         (e.currentTarget as HTMLDivElement).style.background = isOverdue ? 'rgba(239,68,68,0.03)' : 'rgba(255,255,255,0.02)';
       }}
     >
@@ -151,40 +167,56 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
                 {task.priority === 'alta' ? 'Alta' : task.priority === 'media' ? 'Média' : 'Baixa'}
               </span>
 
-              {/* Responsavel */}
+              {/* Responsavel with avatar + email + schedule */}
               {task.responsavel && (
-                <span className="flex items-center gap-1" style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
-                  <User size={10} />
-                  {task.responsavel}
+                <span className="flex items-center gap-1.5" style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>
+                  <span
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0"
+                    style={{ backgroundColor: emailToColor(task.responsavel_email ?? task.responsavel) }}
+                    title={task.responsavel}
+                  >
+                    {task.responsavel.slice(0, 2).toUpperCase()}
+                  </span>
+                  <span>{task.responsavel}</span>
                   {task.responsavel_email && (
-                    <a
-                      href={`mailto:${task.responsavel_email}?subject=Re: ${encodeURIComponent(task.title)}&body=${encodeURIComponent(`Olá,\n\nEm relação à tarefa "${task.title}":\n\n`)}`}
-                      onClick={e => e.stopPropagation()}
-                      title={`Enviar email para ${task.responsavel}`}
-                      className="transition-colors"
-                      style={{ color: 'rgba(255,255,255,0.3)' }}
-                      onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#f59e0b'; }}
-                      onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.3)'; }}
-                    >
-                      <Mail size={12} />
-                    </a>
+                    <>
+                      <a
+                        href={`mailto:${task.responsavel_email}?subject=Re: ${encodeURIComponent(task.title)}&body=${encodeURIComponent(`Olá,\n\nEm relação à tarefa "${task.title}":\n\n`)}`}
+                        onClick={e => e.stopPropagation()}
+                        title={`Enviar email para ${task.responsavel}`}
+                        className="transition-colors"
+                        style={{ color: 'rgba(255,255,255,0.3)' }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#f59e0b'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.3)'; }}
+                      >
+                        <Mail size={11} />
+                      </a>
+                      <button
+                        onClick={handleScheduleMeeting}
+                        title="Agendar reunião"
+                        className="transition-colors"
+                        style={{ color: 'rgba(255,255,255,0.3)' }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.color = '#60a5fa'; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.3)'; }}
+                      >
+                        <CalendarPlus size={11} />
+                      </button>
+                    </>
                   )}
                 </span>
               )}
 
-              {/* Deadline */}
-              {task.deadline && (
+              {/* Deadline — relative */}
+              {deadlineInfo && (
                 <span
                   className="flex items-center gap-1"
                   style={{
                     fontSize: 11,
-                    color: isOverdue ? '#ef4444' : 'rgba(255,255,255,0.4)',
+                    color: deadlineInfo.color,
                     fontWeight: isOverdue ? 600 : 400,
                   }}
                 >
-                  <CalendarDays size={10} />
-                  {format(parseISO(task.deadline), 'dd/MM/yyyy')}
-                  {isOverdue && <span style={{ fontSize: 10, color: '#ef4444' }}>⚠️ Atrasada</span>}
+                  📅 {deadlineInfo.text}
                 </span>
               )}
             </div>

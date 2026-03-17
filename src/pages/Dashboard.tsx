@@ -216,6 +216,30 @@ export default function Dashboard() {
               Esconder concluídas
             </label>
 
+            {/* Claude button */}
+            <button
+              onClick={() => window.open('https://claude.ai', '_blank')}
+              title="Abrir assistente Claude"
+              className="flex items-center gap-1.5 whitespace-nowrap transition-all duration-150 active:scale-[0.98]"
+              style={{
+                padding: '8px 14px',
+                borderRadius: 10,
+                background: 'transparent',
+                color: 'white',
+                fontSize: 13,
+                fontWeight: 600,
+                border: '1px solid white',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.06)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              }}
+            >
+              🤖 Abrir Claude
+            </button>
+
             {/* New task button */}
             <button
               onClick={() => { setEditTask(null); setModalOpen(true); }}
