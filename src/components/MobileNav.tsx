@@ -12,16 +12,24 @@ const tabs = [
 
 export default function MobileNav({ filter, setFilter }: { filter: Filter; setFilter: (f: Filter) => void }) {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0d0d0d] border-t border-[#1a1a1a] flex">
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex"
+      style={{
+        background: '#080808',
+        borderTop: '1px solid var(--glass-divider)',
+      }}
+    >
       {tabs.map((tab) => {
         const active = filter.status === tab.status && !filter.area;
         return (
           <button
             key={tab.label}
             onClick={() => setFilter({ status: tab.status, area: null, responsavel: null })}
-            className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[10px] transition-colors ${
-              active ? 'text-foreground' : 'text-muted-foreground'
-            }`}
+            className="flex-1 flex flex-col items-center gap-0.5 py-2.5 transition-colors"
+            style={{
+              fontSize: 10,
+              color: active ? 'white' : 'rgba(255,255,255,0.4)',
+            }}
           >
             <tab.icon size={16} />
             <span>{tab.label}</span>

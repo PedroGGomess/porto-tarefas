@@ -13,18 +13,29 @@ const pills = [
 
 export default function FilterPills({ activeFilter, setActiveFilter }: Props) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
       {pills.map((pill) => {
         const active = activeFilter === pill.value;
         return (
           <button
             key={pill.value}
             onClick={() => setActiveFilter(pill.value)}
-            className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all flex-shrink-0 ${
-              active
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-surface-raised border-border text-text-subtle hover:text-foreground hover:border-border-hover'
-            }`}
+            className="whitespace-nowrap flex-shrink-0 transition-all duration-150"
+            style={{
+              padding: '6px 14px',
+              borderRadius: 99,
+              fontSize: 12,
+              fontWeight: active ? 600 : 500,
+              background: active ? 'white' : 'rgba(255,255,255,0.05)',
+              color: active ? 'black' : 'rgba(255,255,255,0.5)',
+              border: active ? '1px solid white' : '1px solid rgba(255,255,255,0.08)',
+            }}
+            onMouseEnter={(e) => {
+              if (!active) (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)';
+            }}
+            onMouseLeave={(e) => {
+              if (!active) (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.08)';
+            }}
           >
             {pill.label}
           </button>

@@ -4,22 +4,40 @@ export default function ProgressBar({ total, concluido }: { total: number; concl
   const pct = total > 0 ? Math.round((concluido / total) * 100) : 0;
 
   return (
-    <div className="flex items-center gap-4">
-      <span className="text-xs text-muted-foreground whitespace-nowrap">Progresso Geral</span>
-      <div className="flex-1 h-1.5 bg-[#1a1a1a] rounded-full overflow-hidden">
+    <div
+      style={{
+        background: 'rgba(255,255,255,0.04)',
+        borderRadius: 16,
+        padding: '16px 20px',
+      }}
+    >
+      <div className="flex items-center justify-between mb-2.5">
+        <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>
+          Progresso Geral
+        </span>
+        <span style={{ fontSize: 13, color: 'white', fontWeight: 700 }}>{pct}%</span>
+      </div>
+      <div
+        style={{
+          height: 4,
+          background: 'rgba(255,255,255,0.08)',
+          borderRadius: 99,
+          overflow: 'hidden',
+        }}
+      >
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="h-full rounded-full"
           style={{
+            height: '100%',
+            borderRadius: 99,
             background: pct >= 100
               ? 'linear-gradient(90deg, #22c55e, #4ade80)'
-              : 'linear-gradient(90deg, #ffffff, #cccccc)',
+              : 'white',
           }}
         />
       </div>
-      <span className="text-xs text-foreground font-semibold min-w-[32px] text-right">{pct}%</span>
     </div>
   );
 }

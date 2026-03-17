@@ -44,11 +44,24 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
       transition={{ delay: index * 0.04, duration: 0.3 }}
-      className={`bg-card border rounded-[14px] px-4 py-3.5 hover:border-border-hover hover:-translate-y-px transition-all duration-200 group relative ${
-        isOverdue ? 'border-l-[3px] border-l-destructive border-t-border border-r-border border-b-border' : 'border-border'
-      }`}
-      style={isOverdue ? { boxShadow: 'inset 3px 0 12px -6px rgba(239,68,68,0.15)' } : undefined}
+      className="group relative transition-all duration-200 hover:-translate-y-px"
+      style={{
+        background: isOverdue ? 'rgba(239,68,68,0.03)' : 'rgba(255,255,255,0.02)',
+        border: '1px solid var(--glass-border)',
+        borderLeft: isOverdue ? '2px solid #ef4444' : '1px solid var(--glass-border)',
+        borderRadius: 14,
+        padding: '16px 18px',
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--glass-border-hover)';
+        (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.04)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--glass-border)';
+        (e.currentTarget as HTMLDivElement).style.background = isOverdue ? 'rgba(239,68,68,0.03)' : 'rgba(255,255,255,0.02)';
+      }}
     >
       {/* Unread badge */}
       {unreadCount != null && unreadCount > 0 && (
@@ -61,7 +74,7 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
         {/* Status icon */}
         <button
           onClick={() => onStatusCycle(task)}
-          className="mt-0.5 flex-shrink-0 w-5 h-5 flex items-center justify-center rounded-full text-sm leading-none hover:scale-110 transition-transform"
+          className="mt-0.5 flex-shrink-0 w-[18px] h-[18px] flex items-center justify-center rounded-full text-sm leading-none transition-transform duration-150 hover:scale-125"
           style={{ color: statusInfo.color }}
           title={`Estado: ${statusInfo.label}`}
         >
@@ -72,9 +85,14 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
           {/* Title row */}
           <div className="flex items-start justify-between gap-2">
             <h3
-              className={`text-sm font-semibold leading-snug cursor-pointer hover:underline underline-offset-2 ${
-                isDone ? 'line-through text-muted-foreground' : 'text-foreground'
-              }`}
+              className="cursor-pointer hover:underline underline-offset-2"
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: '-0.01em',
+                color: isDone ? 'rgba(255,255,255,0.3)' : 'white',
+                textDecoration: isDone ? 'line-through' : 'none',
+              }}
               onClick={() => onOpenDetail(task)}
               title="Abrir detalhes"
             >
@@ -83,22 +101,30 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
               <button
                 onClick={() => onEdit(task)}
-                className="p-1.5 rounded-md bg-surface-raised hover:bg-border-hover transition-colors"
+                className="p-1.5 rounded-md transition-colors"
+                style={{ background: 'rgba(255,255,255,0.05)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.1)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; }}
               >
-                <Pencil size={12} className="text-muted-foreground" />
+                <Pencil size={12} style={{ color: 'rgba(255,255,255,0.4)' }} />
               </button>
               <button
                 onClick={() => onDelete(task)}
-                className="p-1.5 rounded-md bg-surface-raised hover:bg-destructive/20 transition-colors"
+                className="p-1.5 rounded-md transition-colors"
+                style={{ background: 'rgba(255,255,255,0.05)' }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(239,68,68,0.15)'; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; }}
               >
-                <Trash2 size={12} className="text-muted-foreground hover:text-destructive" />
+                <Trash2 size={12} style={{ color: 'rgba(255,255,255,0.4)' }} />
               </button>
             </div>
           </div>
 
           {/* Description */}
           {task.description && (
-            <p className="text-muted-foreground text-xs mt-1 line-clamp-2">{task.description}</p>
+            <p className="mt-1 line-clamp-2" style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+              {task.description}
+            </p>
           )}
 
           {/* Meta row + avatar stack */}
@@ -106,8 +132,11 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
             <div className="flex flex-wrap items-center gap-2 min-w-0">
               {/* Area tag */}
               <span
-                className="px-2 py-0.5 rounded-md text-[11px] font-semibold"
                 style={{
+                  padding: '3px 8px',
+                  borderRadius: 6,
+                  fontSize: 10,
+                  fontWeight: 600,
                   backgroundColor: `${areaColor}1a`,
                   color: areaColor,
                   border: `1px solid ${areaColor}40`,
@@ -117,14 +146,14 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
               </span>
 
               {/* Priority */}
-              <span className="flex items-center gap-1 text-[11px] font-medium" style={{ color: priorityColor }}>
+              <span className="flex items-center gap-1" style={{ fontSize: 11, fontWeight: 500, color: priorityColor }}>
                 <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: priorityColor }} />
                 {task.priority === 'alta' ? 'Alta' : task.priority === 'media' ? 'Média' : 'Baixa'}
               </span>
 
               {/* Responsavel */}
               {task.responsavel && (
-                <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-1" style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>
                   <User size={10} />
                   {task.responsavel}
                   {task.responsavel_email && (
@@ -132,7 +161,10 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
                       href={`mailto:${task.responsavel_email}?subject=Re: ${encodeURIComponent(task.title)}&body=${encodeURIComponent(`Olá,\n\nEm relação à tarefa "${task.title}":\n\n`)}`}
                       onClick={e => e.stopPropagation()}
                       title={`Enviar email para ${task.responsavel}`}
-                      className="text-[#555] hover:text-[#f59e0b] transition-colors"
+                      className="transition-colors"
+                      style={{ color: 'rgba(255,255,255,0.3)' }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = '#f59e0b'; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = 'rgba(255,255,255,0.3)'; }}
                     >
                       <Mail size={12} />
                     </a>
@@ -142,10 +174,17 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
 
               {/* Deadline */}
               {task.deadline && (
-                <span className={`flex items-center gap-1 text-[11px] ${isOverdue ? 'text-destructive font-semibold' : 'text-muted-foreground'}`}>
+                <span
+                  className="flex items-center gap-1"
+                  style={{
+                    fontSize: 11,
+                    color: isOverdue ? '#ef4444' : 'rgba(255,255,255,0.4)',
+                    fontWeight: isOverdue ? 600 : 400,
+                  }}
+                >
                   <CalendarDays size={10} />
                   {format(parseISO(task.deadline), 'dd/MM/yyyy')}
-                  {isOverdue && <span className="text-destructive text-[10px]">⚠️ Atrasada</span>}
+                  {isOverdue && <span style={{ fontSize: 10, color: '#ef4444' }}>⚠️ Atrasada</span>}
                 </span>
               )}
             </div>
@@ -157,15 +196,25 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
                   {visibleMembers.map((m) => (
                     <div
                       key={m.id}
-                      className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white border-2 border-card -ml-1 first:ml-0"
-                      style={{ backgroundColor: emailToColor(m.email) }}
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white -ml-1 first:ml-0"
+                      style={{
+                        backgroundColor: emailToColor(m.email),
+                        border: '2px solid #080808',
+                      }}
                       title={m.email}
                     >
                       {m.email.slice(0, 2).toUpperCase()}
                     </div>
                   ))}
                   {extraCount > 0 && (
-                    <div className="w-6 h-6 rounded-full bg-surface-raised border-2 border-card flex items-center justify-center text-[9px] font-bold text-muted-foreground -ml-1">
+                    <div
+                      className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold -ml-1"
+                      style={{
+                        background: 'rgba(255,255,255,0.08)',
+                        color: 'rgba(255,255,255,0.5)',
+                        border: '2px solid #080808',
+                      }}
+                    >
                       +{extraCount}
                     </div>
                   )}
@@ -173,10 +222,14 @@ export default function TaskCard({ task, index, onEdit, onDelete, onStatusCycle,
               )}
               <button
                 onClick={(e) => { e.stopPropagation(); onInvite(task); }}
-                className="w-6 h-6 rounded-full bg-surface-raised border border-border flex items-center justify-center hover:bg-border-hover transition-colors"
+                className="w-6 h-6 rounded-full flex items-center justify-center transition-colors"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
                 title="Convidar membro"
               >
-                <UserPlus size={10} className="text-muted-foreground" />
+                <UserPlus size={10} style={{ color: 'rgba(255,255,255,0.4)' }} />
               </button>
             </div>
           </div>
