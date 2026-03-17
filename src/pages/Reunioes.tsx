@@ -9,7 +9,7 @@ import AppSidebar from '@/components/AppSidebar';
 
 function formatTimeLisbon(dateTimeStr: string): string {
   return new Intl.DateTimeFormat('pt-PT', {
-    timeZone: 'Europe/Lisbon',
+    timeZone: 'Europe/Lisbon',        
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
@@ -236,19 +236,13 @@ export default function Reunioes() {
                 </p>
               </div>
 
-              {isMsConfigured ? (
-                <button
-                  onClick={connect}
-                  className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: '#ffffff', color: '#000000' }}
-                >
-                  Ligar conta Microsoft
-                </button>
-              ) : (
-                <p className="text-muted-foreground text-xs">
-                  Integração Microsoft não configurada.
-                </p>
-              )}
+             <button
+  onClick={connect}
+  className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+  style={{ backgroundColor: '#ffffff', color: '#000000' }}
+>
+  Ligar conta Microsoft
+</button>
             </div>
           </div>
         ) : isLoading ? (
