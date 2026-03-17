@@ -11,7 +11,6 @@ type Props = {
 function AnimatedNumber({ value }: { value: number }) {
   const [display, setDisplay] = useState(0);
   useEffect(() => {
-    let start = 0;
     const duration = 600;
     const startTime = performance.now();
     const animate = (now: number) => {
@@ -25,11 +24,33 @@ function AnimatedNumber({ value }: { value: number }) {
   return <>{display}</>;
 }
 
+function AnimatedBar({ color }: { color: string }) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setWidth(100), 80);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <div className="mt-4" style={{ height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+      <div
+        style={{
+          height: '100%',
+          width: `${width}%`,
+          borderRadius: 99,
+          background: color,
+          opacity: 0.75,
+          transition: 'width 0.9s cubic-bezier(0.4,0,0.2,1)',
+        }}
+      />
+    </div>
+  );
+}
+
 const cards = [
-  { key: 'total', label: 'TOTAL DE TAREFAS', emoji: '📋', barColor: 'rgba(255,255,255,0.3)' },
-  { key: 'pendente', label: 'PENDENTES', emoji: '⏳', barColor: '#555555' },
-  { key: 'emCurso', label: 'EM CURSO', emoji: '🔄', barColor: '#60a5fa' },
-  { key: 'concluido', label: 'CONCLUÍDAS', emoji: '✅', barColor: '#22c55e' },
+  { key: 'total', label: 'TOTAL DE TAREFAS', emoji: '📋', barColor: 'rgba(255,255,255,0.5)', glowColor: 'rgba(255,255,255,0.06)' },
+  { key: 'pendente', label: 'PENDENTES', emoji: '⏳', barColor: '#888888', glowColor: 'rgba(136,136,136,0.10)' },
+  { key: 'emCurso', label: 'EM CURSO', emoji: '🔄', barColor: '#60a5fa', glowColor: 'rgba(96,165,250,0.10)' },
+  { key: 'concluido', label: 'CONCLUÍDAS', emoji: '✅', barColor: '#22c55e', glowColor: 'rgba(34,197,94,0.10)' },
 ];
 
 export default function StatsCards(props: Props) {
@@ -48,6 +69,7 @@ export default function StatsCards(props: Props) {
             borderRadius: 16,
             padding: 20,
             backdropFilter: 'blur(10px)',
+            boxShadow: `0 0 20px ${card.glowColor}`,
           }}
           onMouseEnter={(e) => {
             (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--glass-border-hover)';
@@ -74,15 +96,7 @@ export default function StatsCards(props: Props) {
           >
             {card.label}
           </p>
-          <div
-            className="mt-4"
-            style={{
-              height: 3,
-              borderRadius: 99,
-              background: card.barColor,
-              opacity: 0.6,
-            }}
-          />
+          <AnimatedBar color={card.barColor} />
         </motion.div>
       ))}
     </div>
