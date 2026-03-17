@@ -47,7 +47,7 @@ export function useTaskMembers(taskId: string | null) {
 
   const removeMember = useMutation({
     mutationFn: async (memberId: string) => {
-      const { error } = await supabase.from('task_members').delete().eq('id', memberId);
+      const { error } = await (supabase as any).from('task_members').delete().eq('id', memberId);
       if (error) throw error;
     },
     onSuccess: () => {

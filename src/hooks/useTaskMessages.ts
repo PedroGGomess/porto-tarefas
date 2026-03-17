@@ -96,7 +96,7 @@ export function useAllUnreadCounts(taskIds: string[]) {
     queryKey: ['task_messages_counts', taskIds.join(',')],
     queryFn: async () => {
       if (taskIds.length === 0) return {};
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('task_messages')
         .select('task_id, created_at')
         .in('task_id', taskIds)

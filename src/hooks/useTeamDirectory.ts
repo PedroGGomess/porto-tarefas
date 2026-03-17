@@ -13,12 +13,12 @@ export function useTeamDirectory() {
   const query = useQuery({
     queryKey: ['team_directory'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('team_directory')
         .select('*')
         .order('name', { ascending: true });
       if (error) throw error;
-      return data as TeamMember[];
+      return (data ?? []) as TeamMember[];
     },
   });
 
