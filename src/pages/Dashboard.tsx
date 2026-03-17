@@ -17,8 +17,6 @@ import InviteModal from '@/components/InviteModal';
 import CountdownBanner from '@/components/CountdownBanner';
 import KanbanView from '@/components/KanbanView';
 import GlobalAIAssistant from '@/components/GlobalAIAssistant';
-import { useMicrosoftCalendar } from '@/context/MicrosoftCalendarContext';
-import { parseUTC } from '@/lib/graphApi';
 import { Plus, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 
