@@ -46,7 +46,7 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
 
   const handleAreaClick = (areaValue: string) => {
     if (isTasksPage) {
-      setFilter({ status: null, area: filter.area === areaValue ? null : areaValue });
+      setFilter({ status: null, area: filter.area === areaValue ? null : areaValue, responsavel: null });
     } else {
       navigate('/');
     }
