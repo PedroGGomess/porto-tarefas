@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { useMsal } from '@azure/msal-react';
-import { loginRequest } from '@/lib/msalConfig';
+import { loginRequest, msalInstance } from '@/lib/msalConfig';
 import { getUpcomingMeetings, MsEvent, parseUTC } from '@/lib/graphApi';
 
 interface MicrosoftCalendarContextType {
@@ -90,25 +90,35 @@ export function MicrosoftCalendarProvider({ children }: { children: React.ReactN
   const connect = useCallback(async () => {
     setError(null);
     try {
-      // Do NOT call instance.initialize() here – MsalProvider already handles
-      // initialization, and awaiting it breaks the user-gesture chain which
-      // causes browsers to block the popup window.
-      const result = await instance.loginPopup(loginRequest);
-      const account = result.account;
-      instance.setActiveAccount(account);
+      // Always initialize before loginPopup
+      await msalInstance.initialize();
+
+      const result = await msalInstance.loginPopup({
+        scopes: ['Calendars.Read', 'User.Read'],
+        prompt: 'select_account',
+      });
+
+      if (!result?.account) {
+        throw new Error('No account returned');
+      }
+
+      msalInstance.setActiveAccount(result.account);
       setIsConnected(true);
       await fetchMeetingsWithToken(result.accessToken);
-    } catch (err: unknown) {
-      console.error('[MS Login] Error:', err);
-      const message = err instanceof Error ? err.message : String(err);
-      // Ignore deliberate user cancellations; surface all other errors
-      if (!message.includes('user_cancelled') && !message.includes('interaction_in_progress')) {
+      console.log('[MS Calendar] ✅ Connected:', result.account.username);
+    } catch (error: any) {
+      console.error('[MS Calendar] Login error:', error);
+      if (error?.errorCode === 'popup_window_error') {
+        alert('O browser bloqueou o popup. Por favor permite popups para este site e tenta novamente.');
+      } else if (error?.errorCode === 'user_cancelled' || String(error?.message).includes('user_cancelled')) {
+        console.log('[MS Calendar] User cancelled login');
+      } else if (!String(error?.message).includes('interaction_in_progress')) {
         setError(
           'Não foi possível ligar a conta Microsoft. Verifica se os popups estão permitidos no browser e tenta novamente.'
         );
       }
     }
-  }, [instance, fetchMeetingsWithToken]);
+  }, [fetchMeetingsWithToken]);
 
   const disconnect = useCallback(() => {
     instance.clearCache();
