@@ -25,7 +25,7 @@ const PRIORITY_ORDER: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
 export default function Dashboard() {
   const { tasks, isLoading, createTask, updateTask, deleteTask } = useTasks();
   const { isConnected, todayMeetings } = useMicrosoftCalendar();
-  const [filter, setFilter] = useState<{ status: string | null; area: string | null }>({ status: null, area: null });
+  const [filter, setFilter] = useState<{ status: string | null; area: string | null; responsavel: string | null }>({ status: null, area: null, responsavel: null });
   const [pillFilter, setPillFilter] = useState('todas');
   const [search, setSearch] = useState('');
   const [viewMode, setViewMode] = useState<'lista' | 'kanban'>('lista');
