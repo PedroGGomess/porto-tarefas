@@ -22,13 +22,13 @@ export function useTaskMessages(taskId: string | null) {
     queryKey: ['task_messages', taskId],
     queryFn: async () => {
       if (!taskId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('task_messages')
         .select('*')
         .eq('task_id', taskId)
         .order('created_at', { ascending: true });
       if (error) throw error;
-      return data as TaskMessage[];
+      return (data ?? []) as TaskMessage[];
     },
     enabled: !!taskId,
   });
