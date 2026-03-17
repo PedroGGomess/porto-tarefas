@@ -90,32 +90,20 @@ export function MicrosoftCalendarProvider({ children }: { children: React.ReactN
   const connect = useCallback(async () => {
     setError(null);
     try {
-      // Always initialize before loginPopup
       await msalInstance.initialize();
 
-      const result = await msalInstance.loginPopup({
+      // Trigger redirect login — navigates away from the page.
+      // The redirect response is handled in main.tsx bootstrap, which runs
+      // before the app renders and sets the active account; the auto-restore
+      // useEffect then picks it up to fetch meetings.
+      await msalInstance.loginRedirect({
         scopes: ['Calendars.Read', 'User.Read'],
         prompt: 'select_account',
       });
-
-      if (!result?.account) {
-        throw new Error('No account returned');
-      }
-
-      msalInstance.setActiveAccount(result.account);
-      setIsConnected(true);
-      await fetchMeetingsWithToken(result.accessToken);
-      console.log('[MS Calendar] ✅ Connected:', result.account.username);
     } catch (error: any) {
       console.error('[MS Calendar] Login error:', error);
-      if (error?.errorCode === 'popup_window_error') {
-        alert('O browser bloqueou o popup. Por favor permite popups para este site e tenta novamente.');
-      } else if (error?.errorCode === 'user_cancelled' || String(error?.message).includes('user_cancelled')) {
-        console.log('[MS Calendar] User cancelled login');
-      } else if (!String(error?.message).includes('interaction_in_progress')) {
-        setError(
-          'Não foi possível ligar a conta Microsoft. Verifica se os popups estão permitidos no browser e tenta novamente.'
-        );
+      if (!String(error?.message).includes('interaction_in_progress')) {
+        setError('Não foi possível ligar a conta Microsoft. Tenta novamente.');
       }
     }
   }, [fetchMeetingsWithToken]);
