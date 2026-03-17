@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useMicrosoftCalendar } from '@/context/MicrosoftCalendarContext';
 import { MsEvent, parseUTC } from '@/lib/graphApi';
+import { isMsConfigured } from '@/lib/msalConfig';
 import AppSidebar from '@/components/AppSidebar';
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
@@ -235,13 +236,19 @@ export default function Reunioes() {
                 </p>
               </div>
 
-              <button
-                onClick={connect}
-                className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#ffffff', color: '#000000' }}
-              >
-                Ligar conta Microsoft
-              </button>
+              {isMsConfigured ? (
+                <button
+                  onClick={connect}
+                  className="w-full py-2.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: '#ffffff', color: '#000000' }}
+                >
+                  Ligar conta Microsoft
+                </button>
+              ) : (
+                <p className="text-muted-foreground text-xs">
+                  Integração Microsoft não configurada.
+                </p>
+              )}
             </div>
           </div>
         ) : isLoading ? (
