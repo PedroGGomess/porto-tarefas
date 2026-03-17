@@ -38,7 +38,7 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
 
   const handleNavItemClick = (item: typeof navItems[number]) => {
     if (isTasksPage) {
-      setFilter({ status: item.status, area: null });
+      setFilter({ status: item.status, area: null, responsavel: null });
     } else {
       navigate('/');
     }
