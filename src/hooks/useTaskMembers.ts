@@ -19,20 +19,20 @@ export function useTaskMembers(taskId: string | null) {
     queryKey: ['task_members', taskId],
     queryFn: async () => {
       if (!taskId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('task_members')
         .select('*')
         .eq('task_id', taskId)
         .order('joined_at', { ascending: true });
       if (error) throw error;
-      return data as TaskMember[];
+      return (data ?? []) as TaskMember[];
     },
     enabled: !!taskId,
   });
 
   const addMember = useMutation({
     mutationFn: async ({ taskId, email }: { taskId: string; email: string }) => {
-      const { error } = await supabase.from('task_members').insert({
+      const { error } = await (supabase as any).from('task_members').insert({
         task_id: taskId,
         email,
         invited_by: user!.id,
@@ -47,7 +47,7 @@ export function useTaskMembers(taskId: string | null) {
 
   const removeMember = useMutation({
     mutationFn: async (memberId: string) => {
-      const { error } = await supabase.from('task_members').delete().eq('id', memberId);
+      const { error } = await (supabase as any).from('task_members').delete().eq('id', memberId);
       if (error) throw error;
     },
     onSuccess: () => {

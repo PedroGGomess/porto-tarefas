@@ -22,13 +22,13 @@ export function useTaskMessages(taskId: string | null) {
     queryKey: ['task_messages', taskId],
     queryFn: async () => {
       if (!taskId) return [];
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('task_messages')
         .select('*')
         .eq('task_id', taskId)
         .order('created_at', { ascending: true });
       if (error) throw error;
-      return data as TaskMessage[];
+      return (data ?? []) as TaskMessage[];
     },
     enabled: !!taskId,
   });
@@ -56,7 +56,7 @@ export function useTaskMessages(taskId: string | null) {
   const sendMessage = useMutation({
     mutationFn: async ({ content }: { content: string }) => {
       if (!taskId || !user) throw new Error('Sem sessão');
-      const { error } = await supabase.from('task_messages').insert({
+      const { error } = await (supabase as any).from('task_messages').insert({
         task_id: taskId,
         user_id: user.id,
         sender_email: user.email ?? 'Utilizador',
@@ -71,7 +71,7 @@ export function useTaskMessages(taskId: string | null) {
   const sendAiMessage = useMutation({
     mutationFn: async ({ content }: { content: string }) => {
       if (!taskId || !user) throw new Error('Sem sessão');
-      const { error } = await supabase.from('task_messages').insert({
+      const { error } = await (supabase as any).from('task_messages').insert({
         task_id: taskId,
         user_id: user.id,
         sender_email: 'ai@sistema',
@@ -96,7 +96,7 @@ export function useAllUnreadCounts(taskIds: string[]) {
     queryKey: ['task_messages_counts', taskIds.join(',')],
     queryFn: async () => {
       if (taskIds.length === 0) return {};
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('task_messages')
         .select('task_id, created_at')
         .in('task_id', taskIds)

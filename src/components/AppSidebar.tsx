@@ -7,6 +7,7 @@ import { LogOut, ListTodo, Clock, RefreshCw, CheckCircle2, Ban } from 'lucide-re
 type Filter = {
   status: string | null;
   area: string | null;
+  responsavel: string | null;
 };
 
 type Props = {
@@ -23,7 +24,7 @@ const navItems = [
   { label: 'Bloqueadas', status: 'bloqueado', icon: Ban },
 ];
 
-const defaultFilter: Filter = { status: null, area: null };
+const defaultFilter: Filter = { status: null, area: null, responsavel: null };
 const defaultCounts = { total: 0, pendente: 0, emCurso: 0, concluido: 0, bloqueado: 0 };
 
 export default function AppSidebar({ filter = defaultFilter, setFilter = () => {}, counts = defaultCounts }: Props) {
@@ -37,7 +38,7 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
 
   const handleNavItemClick = (item: typeof navItems[number]) => {
     if (isTasksPage) {
-      setFilter({ status: item.status, area: null });
+      setFilter({ status: item.status, area: null, responsavel: null });
     } else {
       navigate('/');
     }
@@ -45,7 +46,7 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
 
   const handleAreaClick = (areaValue: string) => {
     if (isTasksPage) {
-      setFilter({ status: null, area: filter.area === areaValue ? null : areaValue });
+      setFilter({ status: null, area: filter.area === areaValue ? null : areaValue, responsavel: null });
     } else {
       navigate('/');
     }

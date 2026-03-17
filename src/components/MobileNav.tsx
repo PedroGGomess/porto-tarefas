@@ -1,6 +1,6 @@
 import { ListTodo, Clock, RefreshCw, CheckCircle2, Ban } from 'lucide-react';
 
-type Filter = { status: string | null; area: string | null };
+type Filter = { status: string | null; area: string | null; responsavel: string | null };
 
 const tabs = [
   { label: 'Todas', status: null, icon: ListTodo },
@@ -18,7 +18,7 @@ export default function MobileNav({ filter, setFilter }: { filter: Filter; setFi
         return (
           <button
             key={tab.label}
-            onClick={() => setFilter({ status: tab.status, area: null })}
+            onClick={() => setFilter({ status: tab.status, area: null, responsavel: null })}
             className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[10px] transition-colors ${
               active ? 'text-foreground' : 'text-muted-foreground'
             }`}
