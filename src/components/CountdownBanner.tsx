@@ -1,65 +1,58 @@
 export default function CountdownBanner() {
-  const target = new Date('2026-06-01T00:00:00');
+  const openingDate = new Date('2026-06-01');
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const days = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  const diffDays = Math.ceil((openingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
-  const isUrgent = days <= 14 && days >= 0;
+  const isUrgent = diffDays <= 14 && diffDays > 0;
 
-  if (days < 0) {
+  if (diffDays <= 0) {
     return (
       <div
-        className="text-center"
         style={{
           padding: '10px 28px',
-          background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03))',
-          borderBottom: '1px solid rgba(245,158,11,0.15)',
+          background: 'linear-gradient(90deg, rgba(245,158,11,0.07), rgba(245,158,11,0.03), transparent)',
+          borderBottom: '1px solid rgba(245,158,11,0.12)',
           fontSize: 12,
-          color: 'rgba(245,158,11,0.8)',
+          color: 'rgba(255,255,255,0.5)',
+          textAlign: 'center',
         }}
       >
-        🎉 Loja aberta!
-      </div>
-    );
-  }
-
-  if (days === 0) {
-    return (
-      <div
-        className="text-center countdown-pulse"
-        style={{
-          padding: '10px 28px',
-          background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03))',
-          borderBottom: '1px solid rgba(245,158,11,0.15)',
-          fontSize: 12,
-          color: 'rgba(245,158,11,0.8)',
-        }}
-      >
-        🎉 Hoje é o dia da abertura!
+        🎉 Hoje é o dia da abertura! Bem-vindo à The 100's.
       </div>
     );
   }
 
   return (
     <div
-      className="flex items-center gap-3"
       style={{
         padding: '10px 28px',
-        background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03))',
-        borderBottom: '1px solid rgba(245,158,11,0.15)',
-        fontSize: 12,
-        color: 'rgba(245,158,11,0.8)',
+        background: 'linear-gradient(90deg, rgba(245,158,11,0.07), rgba(245,158,11,0.03), transparent)',
+        borderBottom: '1px solid rgba(245,158,11,0.12)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        flexWrap: 'wrap',
       }}
     >
-      <span>🏪</span>
-      <span>Abertura da loja em</span>
+      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>🏪</span>
+      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>Abertura da loja em</span>
       <span
         className={isUrgent ? 'countdown-pulse' : ''}
-        style={{ fontWeight: 800, color: '#f59e0b', fontSize: 14 }}
+        style={{
+          background: 'rgba(245,158,11,0.15)',
+          border: '1px solid rgba(245,158,11,0.3)',
+          borderRadius: 6,
+          padding: '1px 8px',
+          color: '#f59e0b',
+          fontWeight: 700,
+          fontSize: 16,
+        }}
       >
-        {days}
+        {diffDays}
       </span>
-      <span>dias — 1 de Junho de 2026 · Rua Sá da Bandeira 150, Porto</span>
+      <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
+        dia{diffDays !== 1 ? 's' : ''} — 1 de Junho de 2026 · Rua Sá da Bandeira 150, Porto
+      </span>
     </div>
   );
 }
