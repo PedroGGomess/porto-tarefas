@@ -18,9 +18,10 @@ import CountdownBanner from '@/components/CountdownBanner';
 import KanbanView from '@/components/KanbanView';
 import GlobalAIAssistant from '@/components/GlobalAIAssistant';
 import { Plus, Search } from 'lucide-react';
+import NotificationsPanel from '@/components/NotificationsPanel';
 import { motion } from 'framer-motion';
 
-const PRIORITY_ORDER: Record<string, number> = { alta: 0, media: 1, baixa: 2 };
+const PRIORITY_ORDER: Record<string, number> = { critico: 0, alta: 1, media: 2, baixa: 3 };
 
 export default function Dashboard() {
   const { tasks, isLoading, createTask, updateTask, deleteTask } = useTasks();
@@ -215,6 +216,9 @@ export default function Dashboard() {
               </div>
               Esconder concluídas
             </label>
+
+            {/* Notifications */}
+            <NotificationsPanel />
 
             {/* Claude button */}
             <button

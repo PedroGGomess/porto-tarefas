@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useMicrosoftCalendar } from '@/context/MicrosoftCalendarContext';
 import { AREAS } from '@/lib/supabase';
-import { LogOut, ListTodo, Clock, RefreshCw, CheckCircle2, Ban } from 'lucide-react';
+import { LogOut, ListTodo, Clock, RefreshCw, CheckCircle2, Ban, GanttChart, LayoutDashboard, MessageSquare, FolderOpen, CalendarDays, Hourglass, Pause } from 'lucide-react';
 
 type Filter = {
   status: string | null;
@@ -20,6 +20,8 @@ const navItems = [
   { label: 'Todas as Tarefas', status: null, icon: ListTodo },
   { label: 'Pendentes', status: 'pendente', icon: Clock },
   { label: 'Em Curso', status: 'em-curso', icon: RefreshCw },
+  { label: 'Aguarda Decisão', status: 'aguarda-decisao', icon: Hourglass },
+  { label: 'Aguarda Resposta', status: 'aguarda-resposta', icon: Pause },
   { label: 'Concluídas', status: 'concluido', icon: CheckCircle2 },
   { label: 'Bloqueadas', status: 'bloqueado', icon: Ban },
 ];
@@ -129,6 +131,52 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
             );
           })}
 
+          {/* Divider before views */}
+          <div className="mt-2 mb-2" style={{ height: 1, background: 'var(--glass-divider)' }} />
+          <p className="px-3 mb-1 uppercase" style={{ fontSize: 10, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.25)', fontWeight: 600 }}>
+            Vistas
+          </p>
+
+          {/* Pipeline */}
+          {(() => {
+            const isPipeline = location.pathname === '/pipeline';
+            return (
+              <button
+                onClick={() => navigate('/pipeline')}
+                className="w-full flex items-center gap-2.5 rounded-[10px] transition-all duration-150"
+                style={{ padding: '8px 12px', fontSize: 13, fontWeight: isPipeline ? 600 : 500, color: isPipeline ? 'white' : 'rgba(255,255,255,0.5)', background: isPipeline ? 'rgba(255,255,255,0.08)' : 'transparent' }}
+                onMouseEnter={(e) => { if (!isPipeline) { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)'; }}}
+                onMouseLeave={(e) => { if (!isPipeline) { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)'; }}}
+              >
+                <LayoutDashboard size={16} />
+                <span>Pipeline</span>
+              </button>
+            );
+          })()}
+
+          {/* Cronograma / Gantt */}
+          {(() => {
+            const isGantt = location.pathname === '/cronograma';
+            return (
+              <button
+                onClick={() => navigate('/cronograma')}
+                className="w-full flex items-center gap-2.5 rounded-[10px] transition-all duration-150"
+                style={{ padding: '8px 12px', fontSize: 13, fontWeight: isGantt ? 600 : 500, color: isGantt ? 'white' : 'rgba(255,255,255,0.5)', background: isGantt ? 'rgba(255,255,255,0.08)' : 'transparent' }}
+                onMouseEnter={(e) => { if (!isGantt) { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)'; }}}
+                onMouseLeave={(e) => { if (!isGantt) { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)'; }}}
+              >
+                <GanttChart size={16} />
+                <span>Cronograma</span>
+              </button>
+            );
+          })()}
+
+          {/* Divider */}
+          <div className="mt-2 mb-2" style={{ height: 1, background: 'var(--glass-divider)' }} />
+          <p className="px-3 mb-1 uppercase" style={{ fontSize: 10, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.25)', fontWeight: 600 }}>
+            Colaboração
+          </p>
+
           {/* Reuniões */}
           <button
             onClick={() => navigate('/reunioes')}
@@ -140,8 +188,10 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
               color: isReunioes ? 'white' : 'rgba(255,255,255,0.5)',
               background: isReunioes ? 'rgba(255,255,255,0.08)' : 'transparent',
             }}
+            onMouseEnter={(e) => { if (!isReunioes) { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)'; }}}
+            onMouseLeave={(e) => { if (!isReunioes) { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)'; }}}
           >
-            <span className="text-base leading-none">📅</span>
+            <CalendarDays size={16} />
             <span className="flex-1 text-left">Reuniões</span>
             {isConnected && todayMeetings.length > 0 && (
               <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold leading-none bg-white text-black min-w-[18px] text-center">
@@ -151,60 +201,38 @@ export default function AppSidebar({ filter = defaultFilter, setFilter = () => {
           </button>
 
           {/* Chat de Equipa */}
-          <button
-            onClick={() => navigate('/chat')}
-            className="w-full flex items-center gap-2.5 rounded-[10px] transition-all duration-150"
-            style={{
-              padding: '8px 12px',
-              fontSize: 13,
-              fontWeight: location.pathname === '/chat' ? 600 : 500,
-              color: location.pathname === '/chat' ? 'white' : 'rgba(255,255,255,0.5)',
-              background: location.pathname === '/chat' ? 'rgba(255,255,255,0.08)' : 'transparent',
-            }}
-            onMouseEnter={(e) => {
-              if (location.pathname !== '/chat') {
-                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)';
-                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (location.pathname !== '/chat') {
-                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)';
-              }
-            }}
-          >
-            <span className="text-base leading-none">💬</span>
-            <span className="flex-1 text-left">Chat de Equipa</span>
-          </button>
+          {(() => {
+            const isChat = location.pathname === '/chat';
+            return (
+              <button
+                onClick={() => navigate('/chat')}
+                className="w-full flex items-center gap-2.5 rounded-[10px] transition-all duration-150"
+                style={{ padding: '8px 12px', fontSize: 13, fontWeight: isChat ? 600 : 500, color: isChat ? 'white' : 'rgba(255,255,255,0.5)', background: isChat ? 'rgba(255,255,255,0.08)' : 'transparent' }}
+                onMouseEnter={(e) => { if (!isChat) { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)'; }}}
+                onMouseLeave={(e) => { if (!isChat) { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)'; }}}
+              >
+                <MessageSquare size={16} />
+                <span className="flex-1 text-left">Chat de Equipa</span>
+              </button>
+            );
+          })()}
 
           {/* Ficheiros */}
-          <button
-            onClick={() => navigate('/ficheiros')}
-            className="w-full flex items-center gap-2.5 rounded-[10px] transition-all duration-150"
-            style={{
-              padding: '8px 12px',
-              fontSize: 13,
-              fontWeight: location.pathname === '/ficheiros' ? 600 : 500,
-              color: location.pathname === '/ficheiros' ? 'white' : 'rgba(255,255,255,0.5)',
-              background: location.pathname === '/ficheiros' ? 'rgba(255,255,255,0.08)' : 'transparent',
-            }}
-            onMouseEnter={(e) => {
-              if (location.pathname !== '/ficheiros') {
-                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)';
-                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (location.pathname !== '/ficheiros') {
-                (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)';
-              }
-            }}
-          >
-            <span className="text-base leading-none">📁</span>
-            <span className="flex-1 text-left">Ficheiros</span>
-          </button>
+          {(() => {
+            const isFiles = location.pathname === '/ficheiros';
+            return (
+              <button
+                onClick={() => navigate('/ficheiros')}
+                className="w-full flex items-center gap-2.5 rounded-[10px] transition-all duration-150"
+                style={{ padding: '8px 12px', fontSize: 13, fontWeight: isFiles ? 600 : 500, color: isFiles ? 'white' : 'rgba(255,255,255,0.5)', background: isFiles ? 'rgba(255,255,255,0.08)' : 'transparent' }}
+                onMouseEnter={(e) => { if (!isFiles) { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.85)'; }}}
+                onMouseLeave={(e) => { if (!isFiles) { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.5)'; }}}
+              >
+                <FolderOpen size={16} />
+                <span className="flex-1 text-left">Ficheiros</span>
+              </button>
+            );
+          })()}
         </div>
 
         {/* Area filters */}

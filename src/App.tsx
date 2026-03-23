@@ -10,6 +10,8 @@ import Index from "./pages/Index.tsx";
 import Reunioes from "./pages/Reunioes.tsx";
 import Chat from "./pages/Chat.tsx";
 import Ficheiros from "./pages/Ficheiros.tsx";
+import Gantt from "./pages/Gantt.tsx";
+import Pipeline from "./pages/Pipeline.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +26,8 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/cronograma" element={<Gantt />} />
+                <Route path="/pipeline" element={<Pipeline />} />
                 <Route path="/reunioes" element={<Reunioes />} />
                 <Route path="/chat" element={<Chat />} />
                 <Route path="/ficheiros" element={<Ficheiros />} />
